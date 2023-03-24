@@ -60,3 +60,7 @@ class TestBitsMutation(TestCase):
         mutated = two_point_mutation(bits)
         self.assertEqual(len(bits), len(mutated))
         self.assertEqual(2, count_changes(bits, mutated))
+
+    def test_inversion_mutation(self):
+        # TODO
+        pass

@@ -26,3 +26,10 @@ def two_point_mutation(binary_representation: str) -> str:
         binary_representation[n_mutate1]) + binary_representation[n_mutate1 + 1: n_mutate2] + reverse_bit(
         binary_representation[n_mutate2]) + binary_representation[n_mutate2 + 1:]
     return new_binary_representation
+
+def inversion_mutation(binary_representation: str) -> str:
+    n_split1, n_split2 = sorted(random.sample(range(1, len(binary_representation) - 1), 2))
+    inversed_split = ''.join(map(reverse_bit, binary_representation[n_split1:n_split2]))
+    new_binary_representation = binary_representation[:n_split1] + inversed_split + binary_representation[n_split2 + 1:]
+    
+    return new_binary_representation
