@@ -1,11 +1,11 @@
 import random
 
 
-def homogeneous_crossover(bits1: str, bits2: str) -> (str, str):
+def homogeneous_crossover(bits1: str, bits2: str, crossover_prob: float = 0.5) -> (str, str):
     crossed_bits1 = ''
     crossed_bits2 = ''
     for n in range(len(bits1)):
-        if n % 2:
+        if random.random() <= crossover_prob:
             crossed_bits1 += bits2[n]
             crossed_bits2 += bits1[n]
         else:
