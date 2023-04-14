@@ -1,28 +1,42 @@
 import math
 import random
 
+import Assumptions
 import Chromosome
 
 
 def rank_selection(population: list[Chromosome]) -> list[Chromosome]:
-    alpha = 0.3  # TODO add config vars of selections
+    assumptions = Assumptions.Assumptions()
+    alpha = assumptions.selection_params['rank_selection']
+    size = assumptions.population_size
 
-    population.sort(reverse=True)
-    n_parents = math.floor(alpha * len(population)) # TODO: use assumption pop size or len
+    assert size == len(population), f'population of size {size} expected, got: {len(population)}'
+    population.sort(reverse=True)  # TODO: determine in which way sort the list (maximize or minimize) | another param?
+    n_parents = math.floor(alpha * size)
     selected_parents = population[:n_parents]
 
     return selected_parents
 
 
 def tournament_selection(population: list[Chromosome]) -> list[Chromosome]:
-    k = 3  # TODO add config vars of selections
+    """
+    Divide population in tourneys of size k,
+    best fitting chromosome is the winner
+    and gets selected for next gen parents
+    """
 
+    assumptions = Assumptions.Assumptions()
+    tourney_size = assumptions.selection_params['tournament_selection']
+    size = assumptions.population_size
+    assert size == len(population), f'population of size {size} expected, got: {len(population)}'
+
+    population = population.copy()  # avoid side effects
     random.shuffle(population)
     new_parents = []
 
-    while population:  # TODO check for more pythonic approach
+    while population:
         tourney = []
-        for _ in range(k):
+        for _ in range(tourney_size):
             if population:
                 tourney.append(population.pop())
         tourney.sort(reverse=True)
@@ -32,10 +46,14 @@ def tournament_selection(population: list[Chromosome]) -> list[Chromosome]:
     return new_parents
 
 
-def roulette_wheel_selection(population: list[Chromosome], k=3) -> list[Chromosome]:  # TODO add config vars
+def roulette_wheel_selection(population: list[Chromosome]) -> list[Chromosome]:
+    assumptions = Assumptions.Assumptions()
+    spins = assumptions.selection_params['roulette_wheel_selection']
+    size = assumptions.population_size
+    assert size == len(population), f'population of size {size} expected, got: {len(population)}'
 
     # Calculate the fitness values of each chromosome
-    fitness_values = [1 / c.get_goal_function_value() for c in population]
+    fitness_values = [1 / (c.get_goal_function_value() + 1e-6) for c in population]
     total_fitness = sum(fitness_values)
 
     # Calculate the selection probabilities for each chromosome
@@ -43,13 +61,13 @@ def roulette_wheel_selection(population: list[Chromosome], k=3) -> list[Chromoso
 
     # Select k chromosomes using roulette wheel selection
     selected = []
-    for _ in range(k):
+    for _ in range(spins):
         r = random.uniform(0, 1)
         cumulative_probability = 0
         for j, probability in enumerate(selection_probabilities):
             cumulative_probability += probability
             if cumulative_probability > r:
-                selected.append(population[j])
+                selected.append(population[j])  # TODO: do we want to draw with return? (multiple same parents)
                 break
 
     return selected
