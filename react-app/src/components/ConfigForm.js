@@ -22,7 +22,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export const ConfigForm = () => {
+export const ConfigForm = (props) => {
   const formik = useFormik({
     initialValues: {
       x1MaxVal: 4,
@@ -33,38 +33,31 @@ export const ConfigForm = () => {
       precisionVal: 7,
       populationSize: 150,
       epochsAmount: 1000,
-      crossover: {
-        type: "one",
-        probability: 0.5,
-      },
-      mutation: {
-        type: "one",
-        probability: 0.5,
-      },
-      inversion: {
-        probability: 0.5,
-      },
-      eliteStrategy: {
-        type: "percent",
-        value: 25,
-      },
-      selection: {
-        type: "rank",
-        value: 0.3,
-      },
+      crossoverType: "one",
+    crossoverProbability: 0.5,
+    mutationType: "one",
+    mutationProbability: 0.5,
+    inversionProbability: 0.5,
+    eliteStrategyType: "percent",
+    eliteStrategyValue: 25,
+    selectionType: "rank",
+    selectionValue: 0.3,
     },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: (values) => { 
+      const requestOptions = {
+      method: 'POST',
+      headers: { 
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values, null, 2)
+  };
+  fetch('http://127.0.0.1:8000/assumptions/', requestOptions)
+      .then(response => response.json())
+      .then(data => props.set_process_id(data.process_id));
     },
   });
 
   return (
-    <Stack
-      spacing={12}
-      alignItems="center"
-      justifyContent="space-evenly"
-      style={{ minHeight: "100%" }}
-    >
       <form onSubmit={formik.handleSubmit}>
         <Item>
           <FormLabel>Zakres zmiennych</FormLabel>
@@ -175,7 +168,7 @@ export const ConfigForm = () => {
             <Select
               labelId="select-crossover-label"
               id="select-crossover"
-              value={formik.values.crossover.type}
+              value={formik.values.crossoverType}
               onChange={formik.handleChange}
             >
               <MenuItem value="one">Jedno punktowe</MenuItem>
@@ -186,10 +179,10 @@ export const ConfigForm = () => {
             <TextField
               inputProps={{ type: "number", min: 0, max: 1 }}
               label={"Prawdopodobiestwo krzyowania"}
-              id="crossover-probability"
-              name="crossover.probability"
+              id="crossoverProbability"
+              name="crossoverProbability"
               onChange={formik.handleChange}
-              value={formik.values.crossover.probability}
+              value={formik.values.crossoverProbability}
             />
           </FormControl>
         </Item>
@@ -199,7 +192,7 @@ export const ConfigForm = () => {
             <Select
               labelId="select-mutation-label"
               id="select-mutation"
-              value={formik.values.mutation.type}
+              value={formik.values.mutationType}
               onChange={formik.handleChange}
             >
               <MenuItem value="one">Jednopunktowa</MenuItem>
@@ -209,10 +202,10 @@ export const ConfigForm = () => {
             <TextField
               inputProps={{ type: "number", min: 0, max: 1 }}
               label={"Prawdopodobiestwo mutacji"}
-              id="mutation-probability"
-              name="mutation.probability"
+              id="mutationProbability"
+              name="mutationProbability"
               onChange={formik.handleChange}
-              value={formik.values.mutation.probability}
+              value={formik.values.mutationProbability}
             />
           </FormControl>
         </Item>
@@ -221,10 +214,10 @@ export const ConfigForm = () => {
             fullWidth
             inputProps={{ type: "number", min: 0, max: 1 }}
             label={"Prawdopodobiestwo inwersji"}
-            id="inversion-probability"
-            name="inversion.probability"
+            id="inversionProbability"
+            name="inversionProbability"
             onChange={formik.handleChange}
-            value={formik.values.inversion.probability}
+            value={formik.values.inversionProbability}
           />
         </Item>
         <Item>
@@ -232,9 +225,9 @@ export const ConfigForm = () => {
             <FormLabel>Strategia elitarna</FormLabel>
             <RadioGroup
               row
-              name="eliteStrategy.type"
+              name="eliteStrategyType"
               onChange={formik.handleChange}
-              value={formik.values.eliteStrategy.type}
+              value={formik.values.eliteStrategyType}
             >
               <FormControlLabel
                 value={"percent"}
@@ -256,14 +249,14 @@ export const ConfigForm = () => {
             fullWidth
             inputProps={{ type: "number", min: 0, max: 50 }}
             label={
-              formik.values.eliteStrategy.type === "percent"
+              formik.values.eliteStrategyType === "percent"
                 ? "Procent najlepszych osobników:"
                 : "N. najlepszych osobników:"
             }
-            id="eliteStrategy.value"
-            name="eliteStrategy.value"
+            id="eliteStrategyValue"
+            name="eliteStrategyValue"
             onChange={formik.handleChange}
-            value={formik.values.eliteStrategy.value}
+            value={formik.values.eliteStrategyValue}
           />
         </Item>
         <Item>
@@ -271,9 +264,9 @@ export const ConfigForm = () => {
             <FormLabel>Metoda selekcji</FormLabel>
             <RadioGroup
               row
-              name="selection.type"
+              name="selectionType"
               onChange={formik.handleChange}
-              value={formik.values.selection.type}
+              value={formik.values.selectionType}
             >
               <FormControlLabel
                 value={"rank"}
@@ -294,19 +287,19 @@ export const ConfigForm = () => {
                 labelPlacement="start"
               />
             </RadioGroup>
-            {formik.values.selection.type !== "roulette_wheel" && (
+            {formik.values.selectionType !== "roulette_wheel" && (
               <TextField
                 fullWidth
                 inputProps={{ type: "number", min: 0, max: 50 }}
                 label={
-                  formik.values.selection.type === "rank"
+                  formik.values.selectionType === "rank"
                     ? "Procent najlepszych osobników:"
                     : "N. najlepszych osobników:"
                 }
                 id="selection.value"
                 name="selection.value"
                 onChange={formik.handleChange}
-                value={formik.values.selection.value}
+                value={formik.values.selectionValue}
               />
             )}
           </FormControl>
@@ -321,6 +314,5 @@ export const ConfigForm = () => {
           </Button>
         </Item>
       </form>
-    </Stack>
   );
 };
