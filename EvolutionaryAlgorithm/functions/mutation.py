@@ -1,11 +1,11 @@
 import random
 
-from EvolutionaryAlgorithm.Assumptions import Assumptions
-from EvolutionaryAlgorithm.Chromosome import Chromosome
-from EvolutionaryAlgorithm.Gene import Gene
+from Assumptions import Assumptions
+from Chromosome import Chromosome
+from Gene import Gene
 
 
-def mutate_gene(gene: Gene):
+def mutate_gene(gene: Gene) -> Gene:
     assumptions = Assumptions()
     if random.random() <= assumptions.mutation_probability:
         bits = assumptions.mutation_func(gene.binaryRepresentation)
@@ -14,7 +14,7 @@ def mutate_gene(gene: Gene):
         return gene
 
 
-def mutate_chromosome(chromosome: Chromosome):
+def mutate_chromosome(chromosome: Chromosome) -> Chromosome:
     x1 = mutate_gene(chromosome.x1)
     x2 = mutate_gene(chromosome.x2)
-    return x1, x2
+    return Chromosome(x1, x2)

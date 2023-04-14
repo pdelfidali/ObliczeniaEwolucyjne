@@ -1,8 +1,8 @@
 import random
 
-from EvolutionaryAlgorithm.Assumptions import Assumptions
-from EvolutionaryAlgorithm.Chromosome import Chromosome
-from EvolutionaryAlgorithm.Gene import Gene
+from Assumptions import Assumptions
+from Chromosome import Chromosome
+from Gene import Gene
 
 
 def crossover_genes(gene1: Gene, gene2: Gene) -> (Gene, Gene):

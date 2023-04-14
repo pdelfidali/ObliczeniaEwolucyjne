@@ -4,17 +4,17 @@ import random
 import Chromosome
 
 
-def rank_selection(population: list[Chromosome]):
+def rank_selection(population: list[Chromosome]) -> list[Chromosome]:
     alpha = 0.3  # TODO add config vars of selections
 
     population.sort(reverse=True)
-    n_parents = math.floor(alpha * len(population))
+    n_parents = math.floor(alpha * len(population)) # TODO: use assumption pop size or len
     selected_parents = population[:n_parents]
 
     return selected_parents
 
 
-def tournament_selection(population: list[Chromosome]):
+def tournament_selection(population: list[Chromosome]) -> list[Chromosome]:
     k = 3  # TODO add config vars of selections
 
     random.shuffle(population)
@@ -32,7 +32,7 @@ def tournament_selection(population: list[Chromosome]):
     return new_parents
 
 
-def roulette_wheel_selection(population: list[Chromosome], k=3):  # TODO add config vars of selections
+def roulette_wheel_selection(population: list[Chromosome], k=3) -> list[Chromosome]:  # TODO add config vars
 
     # Calculate the fitness values of each chromosome
     fitness_values = [1 / c.get_goal_function_value() for c in population]

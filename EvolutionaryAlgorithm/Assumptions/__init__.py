@@ -1,8 +1,9 @@
 from math import log2, ceil
 from typing import Callable
 
-from EvolutionaryAlgorithm.functions.bits_crossover import homogeneous_crossover
-from EvolutionaryAlgorithm.functions.bits_mutation import edge_mutation
+from functions.bits_crossover import homogeneous_crossover
+from functions.bits_mutation import edge_mutation
+from functions.selection import rank_selection
 
 
 class AssumptionsMeta(type):
@@ -26,11 +27,16 @@ class Assumptions(metaclass=AssumptionsMeta):
     precision: int
     goal_function: Callable
     selection_func = Callable
+    population_size: int
+    epochs: int
+
+    # selection params somehow
 
     def set_assumptions(self, min_value: float, max_value: float, bits_length: int = None, precision: int = None,
-                        mutation_probability: float = 0.05, mutation_func: Callable = edge_mutation,
-                        crossover_probability: float = 0.75, crossover_func: Callable = homogeneous_crossover,
-                        selection_func: Callable = rank_selection, goal_function: Callable = None):
+                        population_size: int = 10, epochs: int = 50, mutation_probability: float = 0.05,
+                        mutation_func: Callable = edge_mutation, crossover_probability: float = 0.75,
+                        crossover_func: Callable = homogeneous_crossover, selection_func: Callable = rank_selection,
+                        goal_function: Callable = None):
         self.maxValue = max_value
         self.minValue = min_value
         self.mutation_probability = mutation_probability
@@ -39,6 +45,8 @@ class Assumptions(metaclass=AssumptionsMeta):
         self.crossover_func = crossover_func
         self.selection_func = selection_func
         self.goal_function = goal_function
+        self.population_size = population_size
+        self.epochs = epochs
         if precision:
             self.precision = precision
             self.bitsLength = ceil(log2((max_value - min_value) * 10 ** precision) + log2(1))

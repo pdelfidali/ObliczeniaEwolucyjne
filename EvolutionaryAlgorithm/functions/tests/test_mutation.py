@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from EvolutionaryAlgorithm.Assumptions import Assumptions
-from EvolutionaryAlgorithm.Gene import Gene
-from EvolutionaryAlgorithm.functions.bits_mutation import edge_mutation, one_point_mutation, two_point_mutation
-from EvolutionaryAlgorithm.functions.mutation import mutate_gene
+from Assumptions import Assumptions
+from Gene import Gene
+from functions.bits_mutation import edge_mutation, one_point_mutation, two_point_mutation, inversion_mutation
+from functions.mutation import mutate_gene
 
 
 def count_changes(bits, mutated):
@@ -62,5 +62,8 @@ class TestBitsMutation(TestCase):
         self.assertEqual(2, count_changes(bits, mutated))
 
     def test_inversion_mutation(self):
-        # TODO
+        bits = '101010'
+        mutated = inversion_mutation(bits)
+        self.assertEqual(len(bits), len(mutated))
+        self.assertEqual(2, count_changes(bits, mutated))
         pass

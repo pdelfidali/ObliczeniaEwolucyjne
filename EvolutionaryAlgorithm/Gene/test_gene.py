@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from EvolutionaryAlgorithm.Assumptions import Assumptions
-from EvolutionaryAlgorithm.Gene import Gene
+from Assumptions import Assumptions
+from Gene import Gene
 
 
 class TestGene(TestCase):
@@ -12,3 +12,9 @@ class TestGene(TestCase):
         gene2 = Gene('0100001000111111001001110')
         self.assertAlmostEqual(-9.0177380738, gene1.decimalRepresentation, places=6)
         self.assertAlmostEqual(-4.82447727573, gene2.decimalRepresentation, places=6)
+
+    def test_generating_random(self):
+        assumptions = Assumptions()
+        assumptions.set_assumptions(-10, 10, 25, mutation_probability=1)
+        gene = Gene.generate_random_gene()
+        self.assertEqual(len(gene.binaryRepresentation), assumptions.bitsLength)

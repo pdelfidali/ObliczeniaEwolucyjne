@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from EvolutionaryAlgorithm.Assumptions import Assumptions
+from Assumptions import Assumptions
 
 
 class TestAssumptions(TestCase):
