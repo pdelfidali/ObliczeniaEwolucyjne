@@ -16,5 +16,5 @@ class Chromosome:
         assumptions = Assumptions()
         return assumptions.goal_function(self.x1.decimalRepresentation, self.x2.decimalRepresentation)
 
-    def __lt__(self, other):
-         return self.get_goal_function_value() < other.get_goal_function_value()
+    def __lt__(self, other): # TODO: check if we wanna this way
+        return self.get_goal_function_value() < other.get_goal_function_value()

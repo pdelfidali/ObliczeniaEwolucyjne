@@ -25,17 +25,19 @@ class Assumptions(metaclass=AssumptionsMeta):
     crossover_probability: float
     precision: int
     goal_function: Callable
+    selection_func = Callable
 
     def set_assumptions(self, min_value: float, max_value: float, bits_length: int = None, precision: int = None,
                         mutation_probability: float = 0.05, mutation_func: Callable = edge_mutation,
                         crossover_probability: float = 0.75, crossover_func: Callable = homogeneous_crossover,
-                        goal_function: Callable = None):
+                        selection_func: Callable = rank_selection, goal_function: Callable = None):
         self.maxValue = max_value
         self.minValue = min_value
         self.mutation_probability = mutation_probability
         self.mutation_func = mutation_func
         self.crossover_probability = crossover_probability
         self.crossover_func = crossover_func
+        self.selection_func = selection_func
         self.goal_function = goal_function
         if precision:
             self.precision = precision
