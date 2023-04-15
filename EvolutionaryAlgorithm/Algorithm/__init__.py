@@ -1,3 +1,4 @@
+import datetime
 import os
 import time
 import uuid
@@ -30,6 +31,10 @@ class Algorithm:
         self.time = 0
         self.epoch = 0
         self.assumptions_json = None
+        self.date = str(datetime.datetime.utcnow())
+
+    def set_date(self):
+        self.date = str(datetime.datetime.utcnow())
 
     @staticmethod
     def goal_function(x1, x2):
@@ -99,6 +104,7 @@ class Algorithm:
         assumptions.set_precision_type(assumptions_config['precisionType'], assumptions_config['precisionVal'])
 
     def run(self):
+        self.set_date()
         assumptions = Assumptions()
 
         # start the timer
@@ -143,8 +149,8 @@ class Algorithm:
         self.time = et - st
         print('FINISHED')
         self.create_plots()
-        requests.post("https://obliczenia-ewolucyjne-default-rtdb.europe-west1.firebasedatabase.app/algoruns.json",
-                      json={"algo": self.__dict__})
+        requests.patch("https://obliczenia-ewolucyjne-default-rtdb.europe-west1.firebasedatabase.app/algoruns.json",
+                      json={self.process_id: self.__dict__})
 
     def create_plots(self):
         path = os.path.join(os.path.pardir, "react-app", "public", "plots", self.process_id)
