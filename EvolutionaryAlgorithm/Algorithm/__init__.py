@@ -4,6 +4,7 @@ import time
 import uuid
 
 import numpy as np
+import requests
 from matplotlib import pyplot as plt
 import math
 
