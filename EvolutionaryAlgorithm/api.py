@@ -49,17 +49,18 @@ class AssumptionsRequest(BaseModel):
 def post_assumptions(assumptions: AssumptionsRequest):
     algorithm.config_program(assumptions_config=assumptions.dict())
     algorithm.run()
-    return {"status": "ok", "process_id": 2}
+    print(algorithm.process_id)
+    return {"process_id": algorithm.process_id}
 
 
 @app.get("/epoch/{process_id}")
 def get_epoch(process_id: int):
     # max_epochs = 1
     # n = random.randint(0, max_epochs)
-    # if n == max_epochs:
+    if n == max_epochs:
     #     plt.plot([3, 1, 4, 1, 5], 'ks-', mec='w', mew=5, ms=20)
-    #     filename = f"{uuid.uuid4()}.png"
-    #     path = os.path.join(os.path.curdir, "react-app", "public", "plots", filename)
+        filename = f"{uuid.uuid4()}.png"
+        path = os.path.join(os.path.curdir, "react-app", "public", "plots", filename)
     #     plt.savefig(path)
     #     return {"epoch": n, "maxEpochs": max_epochs, "progress": n / max_epochs, "plot": filename}
     return {"epoch": algorithm.epoch}

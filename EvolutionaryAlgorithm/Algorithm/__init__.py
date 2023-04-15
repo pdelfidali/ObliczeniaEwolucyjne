@@ -1,3 +1,9 @@
+import os
+import uuid
+
+import numpy as np
+from matplotlib import pyplot as plt
+
 from Assumptions import Assumptions
 from Chromosome import Chromosome
 from functions.bits_crossover import one_point_crossover, three_point_crossover, two_point_crossover, \
@@ -13,8 +19,10 @@ class Algorithm:
     population_values: list[list]
     time: float
     epoch: int
+    filename: str
 
     def __init__(self):
+        self.process_id = None
         self.best_individuals = []
         self.population_values = []
         self.time = 0
@@ -94,6 +102,7 @@ class Algorithm:
         st = time.time()
         population = init_random_population()
 
+        self.process_id = f"{uuid.uuid1()}"
         for e in range(assumptions.epochs):
             print(f'BEGIN GENERATION #{e}')
             self.epoch = e
@@ -130,6 +139,33 @@ class Algorithm:
         et = time.time()
         self.time = et - st
         print('FINISHED')
+        self.create_plots()
+
+    def create_plots(self):
+        path = os.path.join(os.path.pardir, "react-app", "public", "plots", self.process_id)
+        os.mkdir(path)
+
+        plt.plot(self.best_individuals)
+        plt.xlabel('Epoka')
+        plt.ylabel('Wartość funkcji')
+        plt.title('Wartość funkcji celu dla najlepszego osobnika w kolejnych epokach')
+        plt.savefig(os.path.join(path, 'best_individuals_plot.jpg'))
+        plt.clf()
+
+        X = np.array(self.population_values)
+
+        plt.plot(X.mean(axis=1))
+        plt.xlabel('Epoka')
+        plt.ylabel('Średnia wartość funkcji')
+        plt.title('Średnia wartość funkcji celu dla populacji w kolejnych epokach')
+        plt.savefig(os.path.join(path, 'mean_plot.jpg'))
+        plt.clf()
+        plt.plot(X.std(axis=1))
+        plt.xlabel('Epoka')
+        plt.ylabel('Odchylenie standardowe')
+        plt.title('Wartość odchylenia standardowego dla funkcji celu dla populacji w kolejnych epokach')
+        plt.savefig(os.path.join(path, 'std_plot.jpg'))
+        plt.clf()
 
 
 if __name__ == '__main__':

@@ -14,10 +14,10 @@ export const Plot = (props) => {
         return res.json();
       })
       .then((data) => {
-        console.log(data.filename)
+        console.log(data.filename);
         if (data.filename !== undefined) {
           setPlot(data.filename);
-        } else { 
+        } else {
           setTime(time + 1);
         }
       })
@@ -25,7 +25,7 @@ export const Plot = (props) => {
   };
 
   useEffect(() => {
-    ref.current = setInterval(callApi, 1000);
+    ref.current = setInterval(() => setTime(time + 1), 1000);
 
     return () => {
       if (ref.current) {
@@ -47,10 +47,28 @@ export const Plot = (props) => {
         </>
       )}
       {plot !== null && (
-        <img
-          src={process.env.PUBLIC_URL + "/plots/" + plot}
-          alt="Wykres przedstawiajacy blad w kolejnych epokach."
-        />
+        <>
+          <img
+            src={
+              process.env.PUBLIC_URL +
+              `/plots/${props.process_id}/best_individuals_plot.jpg`
+            }
+            alt="Wartość funkcji celu dla najlepszego osobnika w kolejnych epokach"
+          />
+          <img
+            src={
+              process.env.PUBLIC_URL +
+              `/plots/${props.process_id}/mean_plot.jpg`
+            }
+            alt="Średnia wartość funkcji celu dla populacji w kolejnych epokach"
+          />
+          <img
+            src={
+              process.env.PUBLIC_URL + `/plots/${props.process_id}/std_plot.jpg`
+            }
+            alt="Wartość odchylenia standardowego dla funkcji celu dla populacji w kolejnych epokach"
+          />
+        </>
       )}
     </Box>
   );

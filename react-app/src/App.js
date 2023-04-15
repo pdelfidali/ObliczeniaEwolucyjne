@@ -6,6 +6,22 @@ import { Plot } from "./components/Plot";
 
 function App() {
   const [process_id, set_process_id] = useState(null);
+  const [loading, set_loading] = useState(false);
+
+  const startProcess = (values) =>       {
+    set_loading(true)
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(values, null, 2),
+  };
+  fetch("http://localhost:8000/assumptions", requestOptions)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data)
+    }).catch((err) => console.warn(err));}
 
   return (
     <Stack
@@ -15,10 +31,10 @@ function App() {
       style={{ minHeight: "100vh" }}
     >
       <Typography variant="h1">Obliczenia Ewolucyjne</Typography>
-      {process_id === null && (
-        <ConfigForm set_process_id={(id) => set_process_id(id)} />
+      {!loading && (
+        <ConfigForm startProcess={(values) => startProcess(values)}/>
       )}
-      {process_id !== null && <Plot process_id={process_id} />}
+      {loading && <Plot process_id={process_id} />}
     </Stack>
   );
 }
