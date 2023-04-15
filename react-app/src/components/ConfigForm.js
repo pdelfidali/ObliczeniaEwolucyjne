@@ -12,23 +12,13 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
+ import { Item } from "./Item";
 
 export const ConfigForm = (props) => {
   const formik = useFormik({
     initialValues: {
-      x1MaxVal: 4,
-      x1MinVal: 0,
-      x2MaxVal: 5,
-      x2MinVal: 1,
+      minValue: 0,
+      maxValue: 4,
       precisionType: "bitsLength",
       precisionVal: 7,
       populationSize: 150,
@@ -38,10 +28,10 @@ export const ConfigForm = (props) => {
     mutationType: "one",
     mutationProbability: 0.5,
     inversionProbability: 0.5,
-    eliteStrategyType: "percent",
-    eliteStrategyValue: 25,
+    eliteStrategy: true,
     selectionType: "rank",
     selectionValue: 0.3,
+    optimizationMode: "min"
     },
     onSubmit: (values) => { 
       const requestOptions = {
@@ -57,47 +47,65 @@ export const ConfigForm = (props) => {
     },
   });
 
+  let selectionLabel;
+  switch(formik.values.selectionType){
+    case "rank":
+      selectionLabel = "Procent najlepszych osobników:"
+      break;
+    case "roulette":
+      selectionLabel = "Ilość losowań:"
+      break;
+    default:
+      selectionLabel = "Wielkość turnieju:"
+      break;
+  }
+
   return (
       <form onSubmit={formik.handleSubmit}>
+        <Item>
+          <FormControl>
+            <FormLabel>Typ optymalizacji</FormLabel>
+            <RadioGroup
+              row
+              name="optimizationMode"
+              onChange={formik.handleChange}
+              value={formik.values.optimizationMode}
+            >
+              <FormControlLabel
+                value={"min"}
+                control={<Radio />}
+                label="Minimalizowanie"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                value={"max"}
+                control={<Radio />}
+                label="Maksymalizowanie"
+                labelPlacement="start"
+              />
+            </RadioGroup>
+          </FormControl>
+        </Item>
         <Item>
           <FormLabel>Zakres zmiennych</FormLabel>
         </Item>
         <Item>
           <TextField
             type="number"
-            label="Wartość minimalna zmiennej x1:"
-            id="x1MinVal"
-            name="x1MinVal"
+            label="Wartość minimalna zmiennej:"
+            id="minValue"
+            name="minValue"
             onChange={formik.handleChange}
-            value={formik.values.x1MinVal}
+            value={formik.values.minValue}
           />
 
           <TextField
             type="number"
-            label="Wartość maksymalna zmiennej x1:"
-            id="x1MaxVal"
-            name="x1MaxVal"
+            label="Wartość maksymalna zmiennej:"
+            id="maxValue"
+            name="maxValue"
             onChange={formik.handleChange}
-            value={formik.values.x1MaxVal}
-          />
-        </Item>
-        <Item>
-          <TextField
-            type="number"
-            label="Wartość minimalna zmiennej x2:"
-            id="x2MinVal"
-            name="x2MinVal"
-            onChange={formik.handleChange}
-            value={formik.values.x2MinVal}
-          />
-
-          <TextField
-            type="number"
-            label="Wartość maksymalna zmiennej x2:"
-            id="x2MaxVal"
-            name="x2MaxVal"
-            onChange={formik.handleChange}
-            value={formik.values.x2MaxVal}
+            value={formik.values.maxValue}
           />
         </Item>
         <Item>
@@ -171,10 +179,10 @@ export const ConfigForm = (props) => {
               value={formik.values.crossoverType}
               onChange={formik.handleChange}
             >
-              <MenuItem value="one">Jedno punktowe</MenuItem>
-              <MenuItem value="two">Dwu punktowe</MenuItem>
-              <MenuItem value="three">Trzy punktowe</MenuItem>
-              <MenuItem value="homogeneous">Jednorodne</MenuItem>
+              <MenuItem value="one">Jednopunktowe</MenuItem>
+              <MenuItem value="two">Dwupunktowe</MenuItem>
+              <MenuItem value="three">Trzypunktowe</MenuItem>
+              <MenuItem value="homo">Jednorodne</MenuItem>
             </Select>
             <TextField
               inputProps={{ type: "number", min: 0, max: 1 }}
@@ -197,7 +205,8 @@ export const ConfigForm = (props) => {
             >
               <MenuItem value="one">Jednopunktowa</MenuItem>
               <MenuItem value="two">Dwupunktowa</MenuItem>
-              <MenuItem value="border">Brzegowa</MenuItem>
+              <MenuItem value="edge">Brzegowa</MenuItem>
+              <MenuItem value="inv">Inwersja</MenuItem>
             </Select>
             <TextField
               inputProps={{ type: "number", min: 0, max: 1 }}
@@ -210,54 +219,28 @@ export const ConfigForm = (props) => {
           </FormControl>
         </Item>
         <Item>
-          <TextField
-            fullWidth
-            inputProps={{ type: "number", min: 0, max: 1 }}
-            label={"Prawdopodobiestwo inwersji"}
-            id="inversionProbability"
-            name="inversionProbability"
-            onChange={formik.handleChange}
-            value={formik.values.inversionProbability}
-          />
-        </Item>
-        <Item>
           <FormControl>
             <FormLabel>Strategia elitarna</FormLabel>
             <RadioGroup
               row
-              name="eliteStrategyType"
+              name="eliteStrategy"
               onChange={formik.handleChange}
-              value={formik.values.eliteStrategyType}
+              value={formik.values.eliteStrategy}
             >
               <FormControlLabel
-                value={"percent"}
+                value={false}
                 control={<Radio />}
-                label="Procent najlepszych osobników"
+                label="Nie"
                 labelPlacement="start"
               />
               <FormControlLabel
-                value={"n-best"}
+                value={true}
                 control={<Radio />}
-                label="N. najlepszych osobników"
+                label="Tak"
                 labelPlacement="start"
               />
             </RadioGroup>
           </FormControl>
-        </Item>
-        <Item>
-          <TextField
-            fullWidth
-            inputProps={{ type: "number", min: 0, max: 50 }}
-            label={
-              formik.values.eliteStrategyType === "percent"
-                ? "Procent najlepszych osobników:"
-                : "N. najlepszych osobników:"
-            }
-            id="eliteStrategyValue"
-            name="eliteStrategyValue"
-            onChange={formik.handleChange}
-            value={formik.values.eliteStrategyValue}
-          />
         </Item>
         <Item>
           <FormControl>
@@ -281,27 +264,21 @@ export const ConfigForm = (props) => {
                 labelPlacement="start"
               />
               <FormControlLabel
-                value={"roulette_wheel"}
+                value={"roulette"}
                 control={<Radio />}
                 label="Selekcja kołem ruletki"
                 labelPlacement="start"
               />
             </RadioGroup>
-            {formik.values.selectionType !== "roulette_wheel" && (
               <TextField
                 fullWidth
                 inputProps={{ type: "number", min: 0, max: 50 }}
-                label={
-                  formik.values.selectionType === "rank"
-                    ? "Procent najlepszych osobników:"
-                    : "N. najlepszych osobników:"
-                }
+                label={selectionLabel}
                 id="selection.value"
                 name="selection.value"
                 onChange={formik.handleChange}
                 value={formik.values.selectionValue}
               />
-            )}
           </FormControl>
         </Item>
         <Item>
