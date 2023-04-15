@@ -10,6 +10,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
+from Algorithm import Algorithm
+
 app = FastAPI()
 origins = [
     "*"
@@ -44,6 +46,9 @@ class Assumptions(BaseModel):
 @app.post("/assumptions/")
 def post_assumptions(assumptions: Assumptions):
     print(assumptions)
+    Algorithm.config_program(assumptions_config=assumptions.dict())
+    assumptions = Assumptions()
+    print(assumptions.epochsAmount)
     return {"status": "ok", "process_id": 2}
 
 

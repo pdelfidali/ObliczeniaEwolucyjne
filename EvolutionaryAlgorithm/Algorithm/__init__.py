@@ -12,11 +12,13 @@ class Algorithm:
     best_individuals: list[tuple[float, float]]
     population_values: list[list]
     time: float
+    epoch: int
 
     def __init__(self):
         self.best_individuals = []
         self.population_values = []
         self.time = 0
+        self.epoch = 0
 
     @staticmethod
     def goal_function(x1, x2):
@@ -58,7 +60,8 @@ class Algorithm:
         epoch_values = list(map(lambda ch: ch.get_goal_function_value(), population))
         self.population_values.append(epoch_values)
 
-    def config_program(self, assumptions_config):
+    @staticmethod
+    def config_program(assumptions_config):
         assumptions = Assumptions()
 
         assumptions.set_assumptions(
@@ -91,8 +94,9 @@ class Algorithm:
         st = time.time()
         population = init_random_population()
 
-        for _ in range(assumptions.epochs):
-            print(f'BEGIN GENERATION #{_}')
+        for e in range(assumptions.epochs):
+            print(f'BEGIN GENERATION #{e}')
+            self.epoch = e
             # evaluate the best individual of this generation
 
             if assumptions.optimization_mode == 'max':
@@ -119,15 +123,13 @@ class Algorithm:
             self.append_individual(best_individual)
             self.append_epoch_values(population)
 
-            print([{p.as_decimal_pair(), p.get_goal_function_value()} for p in population])
+            # print([{p.as_decimal_pair(), p.get_goal_function_value()} for p in population])
+            et = time.time()
+            self.time = et - st
 
         et = time.time()
         self.time = et - st
         print('FINISHED')
-
-    def execute(self, assumptions_config):
-        self.config_program(assumptions_config)
-        self.run()
 
 
 if __name__ == '__main__':
