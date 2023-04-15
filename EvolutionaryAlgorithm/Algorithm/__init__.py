@@ -68,7 +68,7 @@ class Algorithm:
 
             population_size=assumptions_config['populationSize'],
             epochs=assumptions_config['epochsAmount'],
-            elite_strategy=assumptions_config['eliteStrategy'],
+            elite_strategy=assumptions_config['eliteStrategy'],  # added
 
             mutation_probability=assumptions_config['mutationProbability'],
             mutation_func=Algorithm.mutation_config(assumptions_config['mutationType']),
@@ -78,15 +78,14 @@ class Algorithm:
 
             selection_func=Algorithm.selection_config(assumptions_config['selectionType']),
 
-            goal_function=Algorithm.goal_function
+            goal_function=Algorithm.goal_function,
+            optimization_mode=assumptions_config['optimizationMode'],  # added maximising / minimising
 
-            # removed inversed
-            # missing maximizing / minimizing
+            # removed inversion
             # remove eliteStrategy type in favor of bool True False on one individual
         )
         assumptions.set_selection_params(assumptions_config['selectionType'], assumptions_config['selectionValue'])
         assumptions.set_precision_type(assumptions_config['precisionType'], assumptions_config['precisionVal'])
-
 
     def run(self):
         assumptions = Assumptions()
@@ -98,7 +97,11 @@ class Algorithm:
         for _ in range(assumptions.epochs):
             print(f'BEGIN GENERATION #{_}')
             # evaluate the best individual of this generation
-            best_individual = max(population, key=lambda x: x.get_goal_function_value())  # TODO: max or min parameter?
+
+            if assumptions.optimization_mode == 'max':
+                best_individual = max(population, key=lambda x: x.get_goal_function_value())
+            else:
+                best_individual = min(population, key=lambda x: x.get_goal_function_value())
 
             # selection of next parents
             parents = select_new_parents(population)
@@ -143,8 +146,9 @@ if __name__ == '__main__':
         'mutationType': "one",
         'mutationProbability': 0.5,
         'eliteStrategy': True,
-        'selectionType': "tournament",  # roulette | rank | tournament
+        'selectionType': "rank",  # roulette | rank | tournament
         'selectionValue': 4,
+        'optimizationMode': 'min'
     }
 
     algorithm = Algorithm()
@@ -156,3 +160,5 @@ if __name__ == '__main__':
     assumptions = Assumptions()
     print(assumptions.selection_params)
     print(assumptions.selection_func)
+    print(f'{algorithm.best_individuals[-1]=}')
+
