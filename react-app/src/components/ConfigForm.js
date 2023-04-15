@@ -17,16 +17,16 @@ import { Item } from "./Item";
 export const ConfigForm = (props) => {
   const formik = useFormik({
     initialValues: {
-      minValue: 0,
-      maxValue: 4,
+      minValue: -5,
+      maxValue: 5,
       precisionType: "bits_length",
-      precisionVal: 7,
+      precisionVal: 20,
       populationSize: 150,
       epochsAmount: 1000,
       crossoverType: "one",
-      crossoverProbability: 0.5,
+      crossoverProbability: 0.75,
       mutationType: "one",
-      mutationProbability: 0.5,
+      mutationProbability: 0.15,
       eliteStrategy: true,
       selectionType: "rank",
       selectionValue: 0.3,
@@ -261,11 +261,10 @@ export const ConfigForm = (props) => {
             />
           </RadioGroup>
           <TextField
-            fullWidth
             inputProps={{ type: "number", min: 0, max: 50 }}
             label={selectionLabel}
-            id="selection.value"
-            name="selection.value"
+            id="selectionValue"
+            name="selectionValue"
             onChange={formik.handleChange}
             value={formik.values.selectionValue}
           />

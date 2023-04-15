@@ -37,8 +37,12 @@ class Algorithm:
         self.date = str(datetime.datetime.utcnow())
 
     @staticmethod
-    def goal_function(x1, x2):
-        return x1 + x2
+    def get_goal_function():
+        return Algorithm.himmelblau_function
+
+    @staticmethod
+    def himmelblau_function(x1, x2):
+        return (x1 ** 2 + x2 - 11) ** 2 + (x1 + x2 ** 2 - 7) ** 2
 
     @staticmethod
     def crossover_config(key: str):
@@ -97,7 +101,7 @@ class Algorithm:
 
             selection_func=Algorithm.selection_config(assumptions_config['selectionType']),
 
-            goal_function=Algorithm.goal_function,
+            goal_function=Algorithm.get_goal_function(),
             optimization_mode=assumptions_config['optimizationMode'],  # added maximising / minimising
         )
         assumptions.set_selection_params(assumptions_config['selectionType'], assumptions_config['selectionValue'])
@@ -156,7 +160,7 @@ class Algorithm:
         path = os.path.join(os.path.pardir, "react-app", "public", "plots", self.process_id)
         os.mkdir(path)
 
-        plt.plot(self.best_individuals)
+        plt.plot([self.himmelblau_function(x1, x2) for (x1, x2) in self.best_individuals])
         plt.xlabel('Epoka')
         plt.ylabel('Wartość funkcji')
         plt.title('Wartość funkcji celu dla najlepszego osobnika w kolejnych epokach')
@@ -168,14 +172,14 @@ class Algorithm:
         plt.plot(X.mean(axis=1))
         plt.xlabel('Epoka')
         plt.ylabel('Średnia wartość funkcji')
-        plt.title('Średnia wartość funkcji celu dla populacji w kolejnych epokach')
+        plt.title('Średnia wartość funkcji celu dla populacji')
         plt.savefig(os.path.join(path, 'mean_plot.jpg'))
         plt.clf()
 
         plt.plot(X.std(axis=1))
         plt.xlabel('Epoka')
         plt.ylabel('Odchylenie standardowe')
-        plt.title('Wartość odchylenia standardowego dla funkcji celu dla populacji w kolejnych epokach')
+        plt.title('Wartość odchylenia standardowego funkcji celu dla populacji')
         plt.savefig(os.path.join(path, 'std_plot.jpg'))
         plt.clf()
 

@@ -84,7 +84,7 @@ def roulette_wheel_selection(population: list[Chromosome]) -> list[Chromosome]:
 
     # Select k chromosomes using roulette wheel selection
     selected_parents = []
-    for _ in range(spins):
+    for _ in range(int(spins)):
         r = random.uniform(0, 1)
         cumulative_probability = 0
         for j, probability in enumerate(selection_probabilities):
