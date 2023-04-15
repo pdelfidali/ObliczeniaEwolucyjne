@@ -12,6 +12,11 @@ class Gene:
         self.decimalRepresentation = assumptions.minValue + int(self.binaryRepresentation, 2) * (
                 assumptions.maxValue - assumptions.minValue) / (2 ** assumptions.bitsLength - 1)
 
+    def __eq__(self, other):
+        if not isinstance(other, Gene):
+            return False
+        return self.binaryRepresentation == other.binaryRepresentation
+
     @staticmethod
     def generate_random_gene() -> 'Gene':
         assumptions = Assumptions.Assumptions()

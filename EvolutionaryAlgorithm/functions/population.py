@@ -25,9 +25,9 @@ def generate_children(parent_1: Chromosome, parent_2: Chromosome) -> (Chromosome
     return Chromosome(new_gene_x1_1, new_gene_x2_1), Chromosome(new_gene_x1_2, new_gene_x2_2)
 
 
-def crossover_population(parents: list[Chromosome]) -> list[Chromosome]:  # TODO add tests
+def crossover_population(parents: list[Chromosome]) -> list[Chromosome]:
     assumptions = Assumptions()
-    children_size = assumptions.population_size - len(parents)
+    children_size = assumptions.population_size
     children = []
 
     for _ in range(children_size // 2):
@@ -43,5 +43,5 @@ def crossover_population(parents: list[Chromosome]) -> list[Chromosome]:  # TODO
     return children
 
 
-def mutate_population(population: list[Chromosome]) -> list[Chromosome]:  # TODO add tests
+def mutate_population(population: list[Chromosome]) -> list[Chromosome]:
     return list(map(mutate_chromosome, population))

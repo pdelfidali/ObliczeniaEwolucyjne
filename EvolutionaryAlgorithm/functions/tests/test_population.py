@@ -55,7 +55,7 @@ class TestPopulationOperations(TestCase):
         ]
 
         children = crossover_population(parents)
-        self.assertEqual(len(children), assumptions.population_size - len(parents))
+        self.assertEqual(len(children), assumptions.population_size)
 
     def test_mutate_population(self):
         assumptions = Assumptions()
