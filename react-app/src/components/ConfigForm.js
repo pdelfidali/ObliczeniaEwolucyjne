@@ -19,7 +19,7 @@ export const ConfigForm = (props) => {
     initialValues: {
       minValue: 0,
       maxValue: 4,
-      precisionType: "bitsLength",
+      precisionType: "bits_length",
       precisionVal: 7,
       populationSize: 150,
       epochsAmount: 1000,
@@ -27,7 +27,6 @@ export const ConfigForm = (props) => {
     crossoverProbability: 0.5,
     mutationType: "one",
     mutationProbability: 0.5,
-    inversionProbability: 0.5,
     eliteStrategy: true,
     selectionType: "rank",
     selectionValue: 0.3,
@@ -121,13 +120,13 @@ export const ConfigForm = (props) => {
               value={formik.values.precisionType}
             >
               <FormControlLabel
-                value={"bitsLength"}
+                value={"bits_length"}
                 control={<Radio />}
                 label="Długość ciągu bitowego"
                 labelPlacement="start"
               />
               <FormControlLabel
-                value={"comaPrecision"}
+                value={"precision"}
                 control={<Radio />}
                 label="Do n. miejsca po przecinku"
                 labelPlacement="start"
@@ -140,7 +139,7 @@ export const ConfigForm = (props) => {
             fullWidth
             inputProps={{ type: "number", min: 0, max: 50 }}
             label={
-              formik.values.precisionType === "comaPrecision"
+              formik.values.precisionType === "precision"
                 ? "Dokładność do n: miejsca po przecinku:"
                 : "Długość ciągu bitowego:"
             }
