@@ -1,7 +1,9 @@
 import os
+import time
 import uuid
 
 import numpy as np
+import requests
 from matplotlib import pyplot as plt
 
 from Assumptions import Assumptions
@@ -11,7 +13,6 @@ from functions.bits_crossover import one_point_crossover, three_point_crossover,
 from functions.bits_mutation import one_point_mutation, two_point_mutation, edge_mutation, inversion_mutation
 from functions.population import select_new_parents, crossover_population, mutate_population, init_random_population
 from functions.selection import rank_selection, tournament_selection, roulette_wheel_selection
-import time
 
 
 class Algorithm:
@@ -20,6 +21,7 @@ class Algorithm:
     time: float
     epoch: int
     filename: str
+    assumptions_json: dict
 
     def __init__(self):
         self.process_id = None
@@ -27,6 +29,7 @@ class Algorithm:
         self.population_values = []
         self.time = 0
         self.epoch = 0
+        self.assumptions_json = None
 
     @staticmethod
     def goal_function(x1, x2):
@@ -140,6 +143,8 @@ class Algorithm:
         self.time = et - st
         print('FINISHED')
         self.create_plots()
+        requests.post("https://obliczenia-ewolucyjne-default-rtdb.europe-west1.firebasedatabase.app/algoruns.json",
+                      json={"algo": self.__dict__})
 
     def create_plots(self):
         path = os.path.join(os.path.pardir, "react-app", "public", "plots", self.process_id)
@@ -160,12 +165,16 @@ class Algorithm:
         plt.title('Średnia wartość funkcji celu dla populacji w kolejnych epokach')
         plt.savefig(os.path.join(path, 'mean_plot.jpg'))
         plt.clf()
+
         plt.plot(X.std(axis=1))
         plt.xlabel('Epoka')
         plt.ylabel('Odchylenie standardowe')
         plt.title('Wartość odchylenia standardowego dla funkcji celu dla populacji w kolejnych epokach')
         plt.savefig(os.path.join(path, 'std_plot.jpg'))
         plt.clf()
+
+    def set_assumptions_json(self, assumptions):
+        self.assumptions_json = assumptions
 
 
 if __name__ == '__main__':
