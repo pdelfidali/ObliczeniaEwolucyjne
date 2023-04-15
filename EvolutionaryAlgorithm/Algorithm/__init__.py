@@ -185,33 +185,3 @@ class Algorithm:
 
     def set_assumptions_json(self, assumptions):
         self.assumptions_json = assumptions
-
-
-if __name__ == '__main__':
-    assumptions_payload = {
-        'minValue': -10,
-        'maxValue': 10,
-        'precisionType': 'bits_length',
-        'precisionVal': 20,
-        'populationSize': 10,
-        'epochsAmount': 10,
-        'crossoverType': "one",
-        'crossoverProbability': 0.5,
-        'mutationType': "one",
-        'mutationProbability': 0.5,
-        'eliteStrategy': True,
-        'selectionType': "rank",  # roulette | rank | tournament
-        'selectionValue': 4,
-        'optimizationMode': 'min'
-    }
-
-    algorithm = Algorithm()
-    algorithm.execute(assumptions_payload)
-
-    print(f'{algorithm.time=}')
-    print(f'{algorithm.best_individuals=}')
-    print(f'{algorithm.population_values=}')
-    assumptions = Assumptions()
-    print(assumptions.selection_params)
-    print(assumptions.selection_func)
-    print(f'{algorithm.best_individuals[-1]=}')
