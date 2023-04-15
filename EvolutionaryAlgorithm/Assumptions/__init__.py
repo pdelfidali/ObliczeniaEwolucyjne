@@ -6,9 +6,9 @@ from functions.bits_mutation import edge_mutation
 from functions.selection import rank_selection
 
 DEFAULT_SELECTION_PARAMS = {
-    'rank_selection': 0.3,
-    'tournament_selection': 3,
-    'roulette_wheel_selection': 3
+    'rank': 0.3,
+    'tournament': 3,
+    'roulette': 3
 }
 
 
@@ -36,12 +36,13 @@ class Assumptions(metaclass=AssumptionsMeta):
     population_size: int
     epochs: int
     selection_params: dict[str, any]
+    elite_strategy: bool
 
     def set_assumptions(self, min_value: float, max_value: float, bits_length: int = None, precision: int = None,
                         population_size: int = 10, epochs: int = 50, mutation_probability: float = 0.05,
                         mutation_func: Callable = edge_mutation, crossover_probability: float = 0.75,
                         crossover_func: Callable = homogeneous_crossover, selection_func: Callable = rank_selection,
-                        selection_params: dict[str, any] = None, goal_function: Callable = None):
+                        selection_params: dict[str, any] = None, goal_function: Callable = None, elite_strategy=True):
         self.maxValue = max_value
         self.minValue = min_value
         self.mutation_probability = mutation_probability
@@ -52,6 +53,7 @@ class Assumptions(metaclass=AssumptionsMeta):
         self.goal_function = goal_function
         self.population_size = population_size
         self.epochs = epochs
+        self.elite_strategy = elite_strategy
 
         if selection_params is None:
             self.selection_params = DEFAULT_SELECTION_PARAMS.copy()

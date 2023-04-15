@@ -36,21 +36,21 @@ class TestSelection(TestCase):
 
     def test_rank_selection(self):
         alpha = 0.5
-        self.assumptions.set_selection_params('rank_selection', alpha)
+        self.assumptions.set_selection_params('rank', alpha)
         selected_parents = rank_selection(self.population)
 
         self.assertEqual(selected_parents, self.population[:int(alpha * len(self.population))])
 
     def test_tournament_selection(self):
         tourney_size = 4
-        self.assumptions.set_selection_params('tournament_selection', tourney_size)
+        self.assumptions.set_selection_params('tournament', tourney_size)
         selected_parents = tournament_selection(self.population)
 
         self.assertEqual(len(selected_parents), math.ceil(len(self.population) / tourney_size))
 
     def test_roulette_wheel_selection(self):
         spins = 4
-        self.assumptions.set_selection_params('roulette_wheel_selection', spins)
+        self.assumptions.set_selection_params('roulette', spins)
         selected_parents = roulette_wheel_selection(self.population)
 
         self.assertEqual(len(selected_parents), spins)
