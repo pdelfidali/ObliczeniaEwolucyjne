@@ -37,12 +37,14 @@ class Assumptions(metaclass=AssumptionsMeta):
     epochs: int
     selection_params: dict[str, any]
     elite_strategy: bool
+    optimization_mode: str
 
     def set_assumptions(self, min_value: float, max_value: float, bits_length: int = None, precision: int = None,
                         population_size: int = 10, epochs: int = 50, mutation_probability: float = 0.05,
                         mutation_func: Callable = edge_mutation, crossover_probability: float = 0.75,
                         crossover_func: Callable = homogeneous_crossover, selection_func: Callable = rank_selection,
-                        selection_params: dict[str, any] = None, goal_function: Callable = None, elite_strategy=True):
+                        selection_params: dict[str, any] = None, goal_function: Callable = None, elite_strategy=True,
+                        optimization_mode: str = 'max'):
         self.maxValue = max_value
         self.minValue = min_value
         self.mutation_probability = mutation_probability
@@ -54,6 +56,7 @@ class Assumptions(metaclass=AssumptionsMeta):
         self.population_size = population_size
         self.epochs = epochs
         self.elite_strategy = elite_strategy
+        self.optimization_mode = optimization_mode
 
         if selection_params is None:
             self.selection_params = DEFAULT_SELECTION_PARAMS.copy()
@@ -73,3 +76,12 @@ class Assumptions(metaclass=AssumptionsMeta):
         rank_selection sets alpha, tournament_selection sets tourney size, roulette_wheel_selection sets amount of spins
         """
         self.selection_params[key] = val
+
+    def set_precision_type(self, precision_type, val):
+        if precision_type == 'precision':
+            self.precision = val
+            self.bitsLength = ceil(log2((self.minValue - self.maxValue) * 10 ** self.precision) + log2(1))
+        elif precision_type == 'bits_length':
+            self.bitsLength = val
+        else:
+            raise Exception("Value of bits_length or precision must be provided.")

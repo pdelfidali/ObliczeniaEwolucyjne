@@ -31,7 +31,7 @@ def tournament_selection(population: list[Chromosome]) -> list[Chromosome]:
     size = assumptions.population_size
     assert size == len(population), f'population of size {size} expected, got: {len(population)}'
 
-    population = population.copy()  # avoid side effects
+    population = population.copy()  # avoids side effects
     random.shuffle(population)
     selected_parents = []
 
@@ -69,7 +69,7 @@ def roulette_wheel_selection(population: list[Chromosome]) -> list[Chromosome]:
         for j, probability in enumerate(selection_probabilities):
             cumulative_probability += probability
             if cumulative_probability > r:
-                selected_parents.append(population[j])  # TODO: do we want to draw with return? (multiple same parents)
+                selected_parents.append(population[j])
                 break
 
     assert len(selected_parents) >= 2, f'number of selected parents >=2 expected, got: {len(selected_parents)}'

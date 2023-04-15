@@ -64,8 +64,8 @@ class Algorithm:
         assumptions.set_assumptions(
             min_value=assumptions_config['minValue'],  # renamed
             max_value=assumptions_config['maxValue'],  # renamed
-            bits_length=assumptions_config['bitsLength'],
-            # precision=int,
+            bits_length=1,  # placeholder | this value has to be provided but is overriden below
+
             population_size=assumptions_config['populationSize'],
             epochs=assumptions_config['epochsAmount'],
             elite_strategy=assumptions_config['eliteStrategy'],
@@ -77,13 +77,16 @@ class Algorithm:
             crossover_func=Algorithm.crossover_config(assumptions_config['crossoverType']),
 
             selection_func=Algorithm.selection_config(assumptions_config['selectionType']),
+
             goal_function=Algorithm.goal_function
 
             # removed inversed
             # missing maximizing / minimizing
             # remove eliteStrategy type in favor of bool True False on one individual
-            # better model for precision/bits_len
         )
+        assumptions.set_selection_params(assumptions_config['selectionType'], assumptions_config['selectionValue'])
+        assumptions.set_precision_type(assumptions_config['precisionType'], assumptions_config['precisionVal'])
+
 
     def run(self):
         assumptions = Assumptions()
@@ -131,7 +134,8 @@ if __name__ == '__main__':
     assumptions_payload = {
         'minValue': -10,
         'maxValue': 10,
-        'bitsLength': 20,
+        'precisionType': 'bits_length',
+        'precisionVal': 20,
         'populationSize': 10,
         'epochsAmount': 10,
         'crossoverType': "one",
@@ -139,8 +143,8 @@ if __name__ == '__main__':
         'mutationType': "one",
         'mutationProbability': 0.5,
         'eliteStrategy': True,
-        'selectionType': "rank",
-        'selectionValue': 0.3,
+        'selectionType': "tournament",  # roulette | rank | tournament
+        'selectionValue': 4,
     }
 
     algorithm = Algorithm()
@@ -149,3 +153,6 @@ if __name__ == '__main__':
     print(f'{algorithm.time=}')
     print(f'{algorithm.best_individuals=}')
     print(f'{algorithm.population_values=}')
+    assumptions = Assumptions()
+    print(assumptions.selection_params)
+    print(assumptions.selection_func)
