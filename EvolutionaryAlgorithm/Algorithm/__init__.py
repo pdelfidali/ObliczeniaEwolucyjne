@@ -3,8 +3,8 @@ import time
 import uuid
 
 import numpy as np
-import requests
 from matplotlib import pyplot as plt
+import math
 
 from Assumptions import Assumptions
 from Chromosome import Chromosome
@@ -32,8 +32,16 @@ class Algorithm:
         self.assumptions_json = None
 
     @staticmethod
-    def goal_function(x1, x2):
-        return x1 + x2
+    def get_goal_function():
+        return Algorithm.himmelblau_function
+
+    @staticmethod
+    def himmelblau_function(x1, x2):
+        return (x1 ** 2 + x2 - 11) ** 2 + (x1 + x2 ** 2 - 7) ** 2
+
+    @staticmethod
+    def mcCormick_function(x1, x2):
+        return math.sin(x1 + x2) + (x1 - x2) ** 2 - 1.5 * x1 + 2.5 * x2 + 1
 
     @staticmethod
     def crossover_config(key: str):
@@ -92,7 +100,7 @@ class Algorithm:
 
             selection_func=Algorithm.selection_config(assumptions_config['selectionType']),
 
-            goal_function=Algorithm.goal_function,
+            goal_function=Algorithm.get_goal_function(),
             optimization_mode=assumptions_config['optimizationMode'],  # added maximising / minimising
         )
         assumptions.set_selection_params(assumptions_config['selectionType'], assumptions_config['selectionValue'])
@@ -175,33 +183,3 @@ class Algorithm:
 
     def set_assumptions_json(self, assumptions):
         self.assumptions_json = assumptions
-
-
-if __name__ == '__main__':
-    assumptions_payload = {
-        'minValue': -10,
-        'maxValue': 10,
-        'precisionType': 'bits_length',
-        'precisionVal': 20,
-        'populationSize': 10,
-        'epochsAmount': 10,
-        'crossoverType': "one",
-        'crossoverProbability': 0.5,
-        'mutationType': "one",
-        'mutationProbability': 0.5,
-        'eliteStrategy': True,
-        'selectionType': "rank",  # roulette | rank | tournament
-        'selectionValue': 4,
-        'optimizationMode': 'min'
-    }
-
-    algorithm = Algorithm()
-    algorithm.execute(assumptions_payload)
-
-    print(f'{algorithm.time=}')
-    print(f'{algorithm.best_individuals=}')
-    print(f'{algorithm.population_values=}')
-    assumptions = Assumptions()
-    print(assumptions.selection_params)
-    print(assumptions.selection_func)
-    print(f'{algorithm.best_individuals[-1]=}')
