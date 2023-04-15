@@ -80,9 +80,6 @@ class Algorithm:
 
             goal_function=Algorithm.goal_function,
             optimization_mode=assumptions_config['optimizationMode'],  # added maximising / minimising
-
-            # removed inversion
-            # remove eliteStrategy type in favor of bool True False on one individual
         )
         assumptions.set_selection_params(assumptions_config['selectionType'], assumptions_config['selectionValue'])
         assumptions.set_precision_type(assumptions_config['precisionType'], assumptions_config['precisionVal'])
@@ -161,4 +158,3 @@ if __name__ == '__main__':
     print(assumptions.selection_params)
     print(assumptions.selection_func)
     print(f'{algorithm.best_individuals[-1]=}')
-

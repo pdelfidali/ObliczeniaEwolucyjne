@@ -25,10 +25,8 @@ app.add_middleware(
 
 
 class Assumptions(BaseModel):
-    x1MaxVal: float
-    x1MinVal: float
-    x2MaxVal: float
-    x2MinVal: float
+    minValue: float
+    maxValue: float
     precisionType: str
     precisionVal: int
     populationSize: int
@@ -37,11 +35,10 @@ class Assumptions(BaseModel):
     crossoverProbability: float
     mutationType: str
     mutationProbability: float
-    inversionProbability: float
-    eliteStrategyType: str
-    eliteStrategyValue: float
+    eliteStrategy: bool
     selectionType: str
     selectionValue: float
+    optimizationMode: str
 
 
 @app.post("/assumptions/")

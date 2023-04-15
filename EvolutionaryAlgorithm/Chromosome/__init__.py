@@ -21,7 +21,7 @@ class Chromosome:
             return False
         return self.x1 == other.x1 and self.x2 == other.x2
 
-    def __lt__(self, other):  # TODO: check if we wanna this way
+    def __lt__(self, other):
         return self.get_goal_function_value() < other.get_goal_function_value()
 
     def __str__(self):
