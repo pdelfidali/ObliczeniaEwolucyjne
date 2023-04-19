@@ -1,9 +1,9 @@
 from math import log2, ceil
 from typing import Callable
 
-from functions.bits_crossover import homogeneous_crossover
-from functions.bits_mutation import edge_mutation
-from functions.selection import rank_selection
+# from functions.bits_crossover import homogeneous_crossover
+# from functions.bits_mutation import edge_mutation
+# from functions.selection import rank_selection
 
 DEFAULT_SELECTION_PARAMS = {
     'rank': 0.3,
@@ -41,8 +41,8 @@ class Assumptions(metaclass=AssumptionsMeta):
 
     def set_assumptions(self, min_value: float, max_value: float, bits_length: int = None, precision: int = None,
                         population_size: int = 10, epochs: int = 50, mutation_probability: float = 0.05,
-                        mutation_func: Callable = edge_mutation, crossover_probability: float = 0.75,
-                        crossover_func: Callable = homogeneous_crossover, selection_func: Callable = rank_selection,
+                        mutation_func: Callable = None, crossover_probability: float = 0.75,
+                        crossover_func: Callable = None, selection_func: Callable = None,
                         selection_params: dict[str, any] = None, goal_function: Callable = None, elite_strategy=True,
                         optimization_mode: str = 'max'):
         self.maxValue = max_value

@@ -1,5 +1,7 @@
 import random
 
+from Assumptions import Assumptions
+from Gene import Gene
 
 def reverse_bit(bit: str):
     if bit == '0':
@@ -33,3 +35,30 @@ def inversion_mutation(binary_representation: str) -> str:
     inversed_split = ''.join(map(reverse_bit, binary_representation[n_split1:n_split2]))
     new_binary_representation = binary_representation[:n_split1] + inversed_split + binary_representation[n_split2:]
     return new_binary_representation
+
+
+def uniform_mutation(gene: Gene) -> Gene:
+    assumptions = Assumptions()
+    new_decimal = random.uniform(assumptions.minValue, assumptions.maxValue)
+    return Gene.createFromDecimalValue(new_decimal)  # TODO: do this
+
+
+def gaussian_mutation(gene: Gene) -> Gene:
+    assumptions = Assumptions()
+    min_v = assumptions.minValue
+    max_v = assumptions.maxValue
+    is_valid = False
+    new_decimal = None
+    while not is_valid:
+        new_decimal = gene.decimalRepresentation + random.gauss()
+        if min_v <= new_decimal <= max_v:
+            is_valid = True
+
+    return Gene.createFromDecimalValue(new_decimal)  # TODO: do this
+
+
+if __name__ == '__main__':
+    a = Assumptions()
+    a.set_assumptions(-5, 5, 3)
+    g1 = Gene("111")
+    uniform_mutation(g1)

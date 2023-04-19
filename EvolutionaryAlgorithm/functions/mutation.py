@@ -8,8 +8,8 @@ from Gene import Gene
 def mutate_gene(gene: Gene) -> Gene:
     assumptions = Assumptions()
     if random.random() <= assumptions.mutation_probability:
-        bits = assumptions.mutation_func(gene.binaryRepresentation)
-        return Gene(bits)
+        new_gene = assumptions.mutation_func(gene)
+        return new_gene
     else:
         return gene
 

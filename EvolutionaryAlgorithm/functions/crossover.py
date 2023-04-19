@@ -8,8 +8,7 @@ from Gene import Gene
 def crossover_genes(gene1: Gene, gene2: Gene) -> (Gene, Gene):
     assumptions = Assumptions()
     if assumptions.crossover_probability >= random.random():
-        new_gene1_binary, new_gene2_binary = assumptions.crossover_func(gene1.binaryRepresentation,
-                                                                        gene2.binaryRepresentation)
+        new_gene1_binary, new_gene2_binary = assumptions.crossover_func(gene1, gene2)
         return Gene(new_gene1_binary), Gene(new_gene2_binary)
     else:
         return gene1, gene2
