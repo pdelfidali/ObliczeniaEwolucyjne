@@ -62,3 +62,9 @@ if __name__ == '__main__':
     a.set_assumptions(-5, 5, 3)
     g1 = Gene("111")
     uniform_mutation(g1)
+
+#  TODO: PROPOSITIONS
+#   1. dont use binaryRepresentation field when dealing with real representation of a Gene (eliminates the need of
+#       generating the field
+#   2. if applied, use only this new methods together to eliminate the conflicts of missing representations (i.e. doing
+#       uniform mutation but suddenly missing binaryRep for crossover - use real rep crossovers

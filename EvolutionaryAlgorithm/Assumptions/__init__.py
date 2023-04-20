@@ -85,3 +85,7 @@ class Assumptions(metaclass=AssumptionsMeta):
             self.bitsLength = val
         else:
             raise Exception("Value of bits_length or precision must be provided.")
+
+    # TODO: new function, may be useful in metaheuristics
+    def in_bounds(self, val: float):
+        return self.minValue <= val <= self.maxValue
