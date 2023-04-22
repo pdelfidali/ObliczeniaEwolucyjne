@@ -38,13 +38,16 @@ class Assumptions(metaclass=AssumptionsMeta):
     selection_params: dict[str, any]
     elite_strategy: bool
     optimization_mode: str
+    # false if using RealRepresentation
+    binaryRepresentation: bool
 
-    def set_assumptions(self, min_value: float, max_value: float, bits_length: int = None, precision: int = None,
-                        population_size: int = 10, epochs: int = 50, mutation_probability: float = 0.05,
-                        mutation_func: Callable = None, crossover_probability: float = 0.75,
-                        crossover_func: Callable = None, selection_func: Callable = None,
-                        selection_params: dict[str, any] = None, goal_function: Callable = None, elite_strategy=True,
-                        optimization_mode: str = 'max'):
+    def set_assumptions(self, binary_representation: bool = False, min_value: float = -10, max_value: float = 10,
+                        bits_length: int = None, precision: int = None, population_size: int = 10, epochs: int = 50,
+                        mutation_probability: float = 0.05, mutation_func: Callable = None,
+                        crossover_probability: float = 0.75, crossover_func: Callable = None,
+                        selection_func: Callable = None, selection_params: dict[str, any] = None,
+                        goal_function: Callable = None, elite_strategy=True, optimization_mode: str = 'max'):
+        self.binaryRepresentation = binary_representation
         self.maxValue = max_value
         self.minValue = min_value
         self.mutation_probability = mutation_probability
@@ -63,13 +66,17 @@ class Assumptions(metaclass=AssumptionsMeta):
         else:
             self.selection_params = selection_params.copy()
 
-        if precision:
-            self.precision = precision
-            self.bitsLength = ceil(log2((max_value - min_value) * 10 ** precision) + log2(1))
-        elif bits_length:
-            self.bitsLength = bits_length
-        else:
-            raise Exception("Value of bits_length or precision must be provided.")
+        if self.binaryRepresentation:
+            if precision:
+                self.precision = precision
+                self.bitsLength = ceil(log2((max_value - min_value) * 10 ** precision) + log2(1))
+            elif bits_length:
+                self.bitsLength = bits_length
+            else:
+                raise Exception("Value of bits_length or precision must be provided.")
+
+    def __init__(self):
+        self.set_assumptions()
 
     def set_selection_params(self, key, val):
         """

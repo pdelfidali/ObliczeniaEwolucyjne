@@ -45,7 +45,7 @@ def tournament_selection(population: list[Chromosome]) -> list[Chromosome]:
 
     while population:
         tourney = []
-        for _ in range(tourney_size):
+        for _ in range(int(tourney_size)):
             if population:
                 tourney.append(population.pop())
         if mode == 'max':

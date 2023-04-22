@@ -1,8 +1,7 @@
-from typing import Callable
-
 import Assumptions
 from Gene import Gene
-
+from Gene.RealRepresentationGene import RealRepresentationGene
+from Gene.BinaryGene import BinaryGene
 
 class Chromosome:
     x1: Gene
@@ -32,6 +31,11 @@ class Chromosome:
 
     @staticmethod
     def generate_random_chromosome() -> 'Chromosome':
-        x1 = Gene.generate_random_gene()
-        x2 = Gene.generate_random_gene()
+        assumptions = Assumptions.Assumptions()
+        if assumptions.binaryRepresentation:
+            x1 = BinaryGene.generate_random_gene()
+            x2 = BinaryGene.generate_random_gene()
+        else:
+            x1 = RealRepresentationGene.generate_random_gene()
+            x2 = RealRepresentationGene.generate_random_gene()
         return Chromosome(x1, x2)

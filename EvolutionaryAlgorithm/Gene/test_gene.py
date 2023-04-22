@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from Assumptions import Assumptions
-from Gene import Gene
+from BinaryGene import Gene
 
 
 class TestGene(TestCase):
