@@ -1,7 +1,7 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import "./App.css";
-import { ConfigForm } from "./components/ConfigForm";
+import { ConfigForm } from "./components/ConfigForm/ConfigForm";
 import { History } from "./components/History";
 import { Plot } from "./components/Plot";
 
