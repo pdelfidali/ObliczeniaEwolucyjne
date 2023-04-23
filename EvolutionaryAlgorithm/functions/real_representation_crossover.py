@@ -15,11 +15,11 @@ def arithmetic_crossover(gene1: RealRepresentationGene, gene2: RealRepresentatio
     is_valid = False
     crossed_decs1, crossed_decs2 = None, None
 
-    while assumptions.in_bounds(crossed_decs1) and assumptions.in_bounds(crossed_decs2):
+    while not (assumptions.in_bounds(crossed_decs1) and assumptions.in_bounds(crossed_decs2)):
         crossed_decs1 = k * dec1 + (1 - k) * dec2
         crossed_decs2 = (1 - k) * dec1 + k * dec2
 
-    return RealRepresentationGene(crossed_decs1), RealRepresentationGene(crossed_decs2)  # TODO: do this
+    return RealRepresentationGene(crossed_decs1), RealRepresentationGene(crossed_decs2)
 
 
 # TODO: * this uses Chromosomes for crossover instead of genes (bcs it neads x1 and x2 of both simultanously)

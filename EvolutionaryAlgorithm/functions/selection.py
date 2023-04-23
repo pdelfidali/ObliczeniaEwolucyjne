@@ -7,7 +7,7 @@ import Chromosome
 
 def rank_selection(population: list[Chromosome]) -> list[Chromosome]:
     assumptions = Assumptions.Assumptions()
-    alpha = assumptions.selection_params['rank']
+    alpha = assumptions.selection_param
     size = assumptions.population_size
     mode = assumptions.optimization_mode
 
@@ -33,7 +33,7 @@ def tournament_selection(population: list[Chromosome]) -> list[Chromosome]:
     """
 
     assumptions = Assumptions.Assumptions()
-    tourney_size = assumptions.selection_params['tournament']
+    tourney_size = assumptions.selection_param
     size = assumptions.population_size
     mode = assumptions.optimization_mode
 
@@ -61,7 +61,7 @@ def tournament_selection(population: list[Chromosome]) -> list[Chromosome]:
 
 def roulette_wheel_selection(population: list[Chromosome]) -> list[Chromosome]:
     assumptions = Assumptions.Assumptions()
-    spins = assumptions.selection_params['roulette']
+    spins = assumptions.selection_param
     size = assumptions.population_size
     mode = assumptions.optimization_mode
 

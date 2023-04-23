@@ -1,7 +1,7 @@
 import random
 
 import Assumptions
-import Gene
+from Gene import Gene
 
 
 class BinaryGene(Gene):

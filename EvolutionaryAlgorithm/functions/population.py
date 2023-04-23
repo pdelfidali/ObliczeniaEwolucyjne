@@ -19,10 +19,13 @@ def select_new_parents(population: list[Chromosome]) -> list[Chromosome]:
     return parents
 
 
-def generate_children(parent_1: Chromosome, parent_2: Chromosome) -> (Chromosome, Chromosome):
-    new_gene_x1_1, new_gene_x1_2 = crossover_genes(parent_1.x1, parent_2.x1)
-    new_gene_x2_1, new_gene_x2_2 = crossover_genes(parent_1.x2, parent_2.x2)
-    return Chromosome(new_gene_x1_1, new_gene_x2_1), Chromosome(new_gene_x1_2, new_gene_x2_2)
+def generate_children(parent_1: Chromosome, parent_2: Chromosome, crossover_type: str) -> (Chromosome, Chromosome):
+    if crossover_type == 'linear_crossover' or crossover_type == 'average_crossover':
+        return crossover_genes(parent_1.x1, parent_2.x1),  crossover_genes(parent_1.x2, parent_2.x2)
+    else:
+        new_gene_x1_1, new_gene_x1_2 = crossover_genes(parent_1.x1, parent_2.x1)
+        new_gene_x2_1, new_gene_x2_2 = crossover_genes(parent_1.x2, parent_2.x2)
+        return Chromosome(new_gene_x1_1, new_gene_x2_1), Chromosome(new_gene_x1_2, new_gene_x2_2)
 
 
 def crossover_population(parents: list[Chromosome]) -> list[Chromosome]:
@@ -32,12 +35,12 @@ def crossover_population(parents: list[Chromosome]) -> list[Chromosome]:
 
     for _ in range(children_size // 2):
         parent_1, parent_2 = random.sample(parents, k=2)
-        child_1, child_2 = generate_children(parent_1, parent_2)
+        child_1, child_2 = generate_children(parent_1, parent_2, assumptions.crossover_func.__name__)
         children.extend([child_1, child_2])
 
     if children_size % 2 == 1:
         parent_1, parent_2 = random.sample(parents, k=2)
-        child_1, _ = generate_children(parent_1, parent_2)
+        child_1, _ = generate_children(parent_1, parent_2, assumptions.crossover_func.__name__)
         children.append(child_1)
 
     return children

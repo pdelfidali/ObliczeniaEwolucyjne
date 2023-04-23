@@ -3,13 +3,15 @@ import random
 from Assumptions import Assumptions
 from Chromosome import Chromosome
 from Gene import Gene
+from Gene.BinaryGene import BinaryGene
+from Gene.RealRepresentationGene import RealRepresentationGene
 
 
-def crossover_genes(gene1: Gene, gene2: Gene) -> (Gene, Gene):
+def crossover_genes(gene1: BinaryGene, gene2: BinaryGene) -> (BinaryGene, BinaryGene):
     assumptions = Assumptions()
     if assumptions.crossover_probability >= random.random():
-        new_gene1_binary, new_gene2_binary = assumptions.crossover_func(gene1, gene2)
-        return Gene(new_gene1_binary), Gene(new_gene2_binary)
+        new_gene1, new_gene2 = assumptions.crossover_func(gene1, gene2)
+        return new_gene1, new_gene2
     else:
         return gene1, gene2
 

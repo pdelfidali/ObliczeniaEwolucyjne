@@ -4,7 +4,7 @@ from Assumptions import Assumptions
 from Gene.RealRepresentationGene import RealRepresentationGene
 
 
-def uniform_mutation() -> RealRepresentationGene:
+def uniform_mutation(gene: RealRepresentationGene) -> RealRepresentationGene:
     assumptions = Assumptions()
     new_decimal = random.uniform(assumptions.minValue, assumptions.maxValue)
     return RealRepresentationGene(new_decimal)

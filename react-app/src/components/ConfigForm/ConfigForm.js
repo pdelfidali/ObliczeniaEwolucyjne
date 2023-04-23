@@ -6,7 +6,7 @@ import { MetaheuristicsConfig } from "./MetaheuristicsConfig/MetaheuristicsConfi
 import { CommonConfig } from "./CommonConfig/CommonConfig";
 
 const renderFieldsForMethod = (formik) => {
-  formik.values.useMetheuristics = false;
+  formik.values.useMetaheuristics = false;
   switch (formik.values.method) {
     case "binary_representation":
       if (["uniform", "gaussian"].includes(formik.values.mutationType)) {
@@ -21,7 +21,7 @@ const renderFieldsForMethod = (formik) => {
       }
       return <RealRepresentationConfig formik={formik} />;
     case "metaheuristics":
-      formik.values.useMetheuristics = true;
+      formik.values.useMetaheuristics = true;
       return <MetaheuristicsConfig formik={formik} />;
     default:
       return <></>;
@@ -46,7 +46,7 @@ export const ConfigForm = (props) => {
       selectionType: "rank",
       selectionValue: 0.3,
       optimizationMode: "min",
-      useMetheuristics: false,
+      useMetaheuristics: false,
       metaheuristics: {
         name: "random_walk",
         assumptions: {

@@ -1,15 +1,15 @@
 from math import log2, ceil
 from typing import Callable
 
-# from functions.bits_crossover import homogeneous_crossover
-# from functions.bits_mutation import edge_mutation
-# from functions.selection import rank_selection
-
 DEFAULT_SELECTION_PARAMS = {
     'rank': 0.3,
     'tournament': 3,
     'roulette': 3
 }
+
+
+def himmelblau_function(x1, x2):
+    return (x1 ** 2 + x2 - 11) ** 2 + (x1 + x2 ** 2 - 7) ** 2
 
 
 class AssumptionsMeta(type):
@@ -23,6 +23,7 @@ class AssumptionsMeta(type):
 
 
 class Assumptions(metaclass=AssumptionsMeta):
+    method: str
     minValue: float
     maxValue: float
     bitsLength: int
@@ -35,64 +36,66 @@ class Assumptions(metaclass=AssumptionsMeta):
     selection_func = Callable
     population_size: int
     epochs: int
-    selection_params: dict[str, any]
+    selection_param: float
     elite_strategy: bool
     optimization_mode: str
-    # false if using RealRepresentation
-    binaryRepresentation: bool
-
-    def set_assumptions(self, binary_representation: bool = False, min_value: float = -10, max_value: float = 10,
-                        bits_length: int = None, precision: int = None, population_size: int = 10, epochs: int = 50,
-                        mutation_probability: float = 0.05, mutation_func: Callable = None,
-                        crossover_probability: float = 0.75, crossover_func: Callable = None,
-                        selection_func: Callable = None, selection_params: dict[str, any] = None,
-                        goal_function: Callable = None, elite_strategy=True, optimization_mode: str = 'max'):
-        self.binaryRepresentation = binary_representation
-        self.maxValue = max_value
-        self.minValue = min_value
-        self.mutation_probability = mutation_probability
-        self.mutation_func = mutation_func
-        self.crossover_probability = crossover_probability
-        self.crossover_func = crossover_func
-        self.selection_func = selection_func
-        self.goal_function = goal_function
-        self.population_size = population_size
-        self.epochs = epochs
-        self.elite_strategy = elite_strategy
-        self.optimization_mode = optimization_mode
-
-        if selection_params is None:
-            self.selection_params = DEFAULT_SELECTION_PARAMS.copy()
-        else:
-            self.selection_params = selection_params.copy()
-
-        if self.binaryRepresentation:
-            if precision:
-                self.precision = precision
-                self.bitsLength = ceil(log2((max_value - min_value) * 10 ** precision) + log2(1))
-            elif bits_length:
-                self.bitsLength = bits_length
-            else:
-                raise Exception("Value of bits_length or precision must be provided.")
-
-    def __init__(self):
-        self.set_assumptions()
-
-    def set_selection_params(self, key, val):
-        """
-        rank_selection sets alpha, tournament_selection sets tourney size, roulette_wheel_selection sets amount of spins
-        """
-        self.selection_params[key] = val
+    metaheuristics_params: dict[str, any]
+    metaheuristics_func: Callable
 
     def set_precision_type(self, precision_type, val):
+        self.precision = None
+        self.bitsLength = None
         if precision_type == 'precision':
             self.precision = val
-            self.bitsLength = ceil(log2((self.minValue - self.maxValue) * 10 ** self.precision) + log2(1))
+            self.bitsLength = ceil(log2((self.maxValue - self.minValue) * 10 ** self.precision) + log2(1))
         elif precision_type == 'bits_length':
             self.bitsLength = val
         else:
             raise Exception("Value of bits_length or precision must be provided.")
 
-    # TODO: new function, may be useful in metaheuristics
     def in_bounds(self, val: float):
-        return self.minValue <= val <= self.maxValue
+        if val:
+            return self.minValue <= val <= self.maxValue
+        else:
+            return False
+
+    def set_method(self, method: str):
+        self.method = method
+
+    def set_data_range(self, min_value, max_value):
+        self.minValue = min_value
+        self.maxValue = max_value
+
+    def set_population(self, population_size):
+        self.population_size = population_size
+
+    def set_epochs(self, epochs):
+        self.epochs = epochs
+
+    def set_crossover(self, crossover_func, crossover_probability):
+        self.crossover_func = crossover_func
+        self.crossover_probability = crossover_probability
+
+    def set_mutation(self, mutation_func, mutation_probability):
+        self.mutation_func = mutation_func
+        self.mutation_probability = mutation_probability
+
+    def set_elite_strategy(self, elite_strategy):
+        self.elite_strategy = elite_strategy
+
+    def set_selection(self, selection_func, selection_param_value):
+        self.selection_func = selection_func
+        self.selection_param = selection_param_value
+
+    def set_optimization_mode(self, optimization_mode):
+        self.optimization_mode = optimization_mode
+
+    def set_goal_function(self, goal_function):
+        self.goal_function = goal_function
+
+    def __init__(self):
+        self.goal_function = himmelblau_function
+
+    def set_metaheuristics(self, metaheuristics_func, metaheuristics_params=None):
+        self.metaheuristics_func = metaheuristics_func
+        self.metaheuristics_params = metaheuristics_params

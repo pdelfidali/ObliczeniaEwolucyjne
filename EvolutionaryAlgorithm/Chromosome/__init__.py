@@ -1,13 +1,13 @@
 import Assumptions
-from Gene import Gene
 from Gene.RealRepresentationGene import RealRepresentationGene
 from Gene.BinaryGene import BinaryGene
 
-class Chromosome:
-    x1: Gene
-    x2: Gene
 
-    def __init__(self, x1: Gene, x2: Gene):
+class Chromosome:
+    x1: BinaryGene | RealRepresentationGene
+    x2: BinaryGene | RealRepresentationGene
+
+    def __init__(self, x1: BinaryGene | RealRepresentationGene, x2: BinaryGene | RealRepresentationGene):
         self.x1 = x1
         self.x2 = x2
 
@@ -32,7 +32,7 @@ class Chromosome:
     @staticmethod
     def generate_random_chromosome() -> 'Chromosome':
         assumptions = Assumptions.Assumptions()
-        if assumptions.binaryRepresentation:
+        if assumptions.method == 'binary_representation':
             x1 = BinaryGene.generate_random_gene()
             x2 = BinaryGene.generate_random_gene()
         else:
