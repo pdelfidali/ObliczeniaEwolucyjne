@@ -96,7 +96,7 @@ def set_metaheuristics(metaheuristics_name, metaheuristics_params, assumptions):
     if metaheuristics_name == 'random_sampling':
         assumptions.set_metaheuristics(random_sampling)
     elif metaheuristics_name == 'random_walk':
-        assumptions.set_metaheuristics(random_walk)
+        assumptions.set_metaheuristics(random_walk, metaheuristics_params)
     elif metaheuristics_name == 'hill_climbing':
         assumptions.set_metaheuristics(hill_climbing, metaheuristics_params)
     elif metaheuristics_name == 'simulated_annealing':
