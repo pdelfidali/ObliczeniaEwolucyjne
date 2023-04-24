@@ -1,5 +1,4 @@
 import datetime
-import json
 import os
 import time
 import uuid
@@ -107,9 +106,11 @@ class Algorithm:
         self.create_plots()
         self.best_individuals = []
         self.use_metaheuristics = str(self.use_metaheuristics)
-        res = requests.patch("https://obliczenia-ewolucyjne-default-rtdb.europe-west1.firebasedatabase.app/algoruns.json",
-                       json={self.process_id: self.__dict__})
+        res = requests.patch(
+            "https://obliczenia-ewolucyjne-default-rtdb.europe-west1.firebasedatabase.app/algoruns.json",
+            json={self.process_id: self.__dict__})
         self.use_metaheuristics = False
+
     def create_plots(self):
         path = os.path.join(os.path.pardir, "react-app", "public", "plots", self.process_id)
         os.mkdir(path)
