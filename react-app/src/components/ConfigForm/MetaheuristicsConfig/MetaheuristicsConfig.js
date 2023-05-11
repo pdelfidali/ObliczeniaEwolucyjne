@@ -6,6 +6,7 @@ import { SimulatedAnnealingConfig } from "./SimulatedAnnealingConfig";
 const renderFieldsForMetaheuristic = (formik) => {
   switch (formik.values.metaheuristics.name) {
     case "hill_climbing":
+    case "random_walk":
       return <HillClimbingConfig formik={formik} />;
     case "simulated_annealing":
       return <SimulatedAnnealingConfig formik={formik} />;

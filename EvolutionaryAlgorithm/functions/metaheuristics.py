@@ -1,5 +1,6 @@
-from numpy import random
 import numpy as np
+from numpy import random
+
 from Assumptions import Assumptions
 
 
@@ -63,13 +64,14 @@ def random_walk():
         best = tmp
     return solutions, scores
 
+
 def simulated_annealing():
     assumptions = Assumptions()
     objective = assumptions.goal_function
     bounds = np.array([[assumptions.minValue, assumptions.maxValue], [assumptions.minValue, assumptions.maxValue]])
     n_iterations = assumptions.epochs
     step_size = assumptions.metaheuristics_params['step_size']
-    temp =  assumptions.metaheuristics_params['temperature']
+    temp = assumptions.metaheuristics_params['temperature']
     # generate an initial point
     best = bounds[:, 0] + random.rand(len(bounds)) * (bounds[:, 1] - bounds[:, 0])
     # evaluate the initial point

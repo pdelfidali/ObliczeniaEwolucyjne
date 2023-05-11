@@ -100,8 +100,8 @@ class Algorithm:
                 et = time.time()
                 self.time = et - st
 
-            et = time.time()
-            self.time = et - st
+        et = time.time()
+        self.time = et - st
         print('FINISHED')
         self.create_plots()
         self.best_individuals = []
