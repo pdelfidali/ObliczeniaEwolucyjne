@@ -20,47 +20,56 @@ n_jobs=-1)
 print(scores.mean()) 
 
 import random
-def SVCParameters(numberFeatures,icls):
- genome = list()
- #kernel
- listKernel = ["linear","rbf", "poly","sigmoid"]
- genome.append(listKernel[random.randint(0, 3)])
- #c
- k = random.uniform(0.1, 100)
- genome.append(k)
- #degree
- #genome.append(random.int(0.1,5)) # TODO: z pliku i daje errory
- genome.append(random.randint(0,5)) # podmienione
- #gamma
- gamma = random.uniform(0.001,5)
- genome.append(gamma)
- # coeff
- coeff = random.uniform(0.01, 10)
- genome.append(coeff)
- return icls(genome) 
+def SVCParametersFeatures(numberFeatures,icls):
+    genome = list()
+    # kernel
+    listKernel = ["linear","rbf", "poly", "sigmoid"]
+    genome.append(listKernel[random.randint(0, 3)])
+    #c
+    k = random.uniform(0.1, 100)
+    genome.append(k)
+    #degree
+    genome.append(random.randint(0,5))
+    #gamma
+    gamma = random.uniform(0.001,5)
+    genome.append(gamma)
+    # coeff
+    coeff = random.uniform(0.01, 10)
+    genome.append(coeff)
+    
+    for i in range(0,numberFeatures):
+        genome.append(random.randint(0, 1))
 
+    return icls(genome) 
 
 import math
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 
-def SVCParametersFitness(y,df,numberOfAtributtes,individual):
+def SVCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
     split=5
     cv = StratifiedKFold(n_splits=split)
+
+    listColumnsToDrop=[] #lista cech do usuniecia
+    for i in range(numberOfAtributtes,len(individual)):
+        if individual[i]==0: #gdy atrybut ma zero to usuwamy cechę
+            listColumnsToDrop.append(i-numberOfAtributtes)
+    
+    dfSelectedFeatures=df.drop(df.columns[listColumnsToDrop], axis=1, inplace=False)
+
     mms = MinMaxScaler()
-    df_norm = mms.fit_transform(df)
-    estimator = SVC(kernel=individual[0],C=individual[1],degree=individual[2],gamma=individual[3],coef0=individual[4],random_state=101)
+    df_norm = mms.fit_transform(dfSelectedFeatures)
+    estimator = SVC(kernel=individual[0],C=individual[1],degree=individual[2],gamma=individual[3],coef0=individual[4],random_state=101) 
+
     resultSum = 0
     for train, test in cv.split(df_norm, y):
         estimator.fit(df_norm[train], y[train])
         predicted = estimator.predict(df_norm[test])
         expected = y[test]
-        tn, fp, fn, tp = metrics.confusion_matrix(expected,predicted).ravel()
+        tn, fp, fn, tp = metrics.confusion_matrix(expected, predicted).ravel()
         result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
-    resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
+        resultSum = resultSum + result #zbieramy wyniki z poszczególnych etapów walidacji krzyżowej
     return resultSum / split,
-
-fitness_function = SVCParametersFitness
 
 def mutationSVC(individual):
     numberParamer= random.randint(0,len(individual)-1)
@@ -74,18 +83,20 @@ def mutationSVC(individual):
         individual[1]=k
     elif numberParamer == 2:
         #degree
-        #individual[2]=random.uniform(0.1, 5) # TODO: z pliku daje errora
-        individual[2]=random.randint(0,5) # podmienione
+        individual[2]=random.randint(0, 5)
     elif numberParamer == 3:
         #gamma
-        gamma = random.uniform(0.01, 5)
+        gamma = random.uniform(0.01, 1)
         individual[3]=gamma
     elif numberParamer ==4:
         # coeff
-        coeff = random.uniform(0.1, 20)
+        coeff = random.uniform(0.1, 1)
         individual[4] = coeff
-
-
+    else: #genetyczna selekcja cech
+        if individual[numberParamer] == 0:
+            individual[numberParamer] = 1
+        else:   
+            individual[numberParamer] = 0
 import time 
 
 import matplotlib.pyplot as plt
@@ -106,9 +117,9 @@ creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
-toolbox.register('individual',SVCParameters, numberOfAtributtes, creator.Individual) # PROJEKT 4
+toolbox.register('individual',SVCParametersFeatures, numberOfAtributtes, creator.Individual) # PROJEKT 4
 toolbox.register('population', tools.initRepeat, list, toolbox.individual)
-toolbox.register("evaluate", SVCParametersFitness,y,df,numberOfAtributtes) # PROJEKT 4
+toolbox.register("evaluate", SVCParametersFeatureFitness,y,df,numberOfAtributtes) # PROJEKT 4
 
 toolbox.register('select', tools.selWorst)
 toolbox.register("mate", tools.cxOnePoint)
@@ -171,10 +182,10 @@ while g < numberIteration:
     max_data.append(max(fits))
     avg_data.append(mean)
     std_data.append(std)
-    print("  Min %s" % min(fits))
-    print("  Max %s" % max(fits))
-    print("  Avg %s" % mean)
-    print("  Std %s" % std)
+    # print("  Min %s" % min(fits))
+    # print("  Max %s" % max(fits))
+    # print("  Avg %s" % mean)
+    # print("  Std %s" % std)
 runtime = time.time() - t_start
 print(f"{runtime * 1000:.2f} ms & {min(fits):.5f} & {sum(std_data)/len(std_data):.2f}")
 best_ind = tools.selBest(pop, 1)[0]
@@ -193,8 +204,4 @@ plt.title("Wartość maksymalna")
 plt.subplot(2,2,4)
 plt.plot(std_data)
 plt.title("Wartość odchylenia standardowego")
-plt.show()
-
-# Best individual is ['sigmoid', 94.3504115183792, 3, 2.679887681802591, 18.30499836479284], (0.11000000000000001,)
-ind = ['sigmoid', 94.3504115183792, 3, 2.679887681802591, 18.30499836479284]
-print(SVCParametersFitness(y,df,numberOfAtributtes,ind)) 
+# plt.show()
