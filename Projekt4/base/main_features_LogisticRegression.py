@@ -38,8 +38,8 @@ def LRCParametersFeatures(numberFeatures,icls):
     solver = ["lbfgs","liblinear","saga"]
     genome.append(solver[random.randint(0, 2)])
 
-    for i in range(0,numberFeatures):
-        genome.append(random.randint(0, 1))
+    # for i in range(0,numberFeatures):
+    #     genome.append(random.randint(0, 1))
 
     return icls(genome)
 
@@ -47,6 +47,41 @@ def LRCParametersFeatures(numberFeatures,icls):
 import math
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
+
+
+def LRCDefault(y,df):
+    split=5
+    cv = StratifiedKFold(n_splits=split)
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df)
+
+    estimator = LogisticRegression()
+    resultSum = 0
+    for train, test in cv.split(df_norm, y):
+        estimator.fit(df_norm[train], y[train])
+        predicted = estimator.predict(df_norm[test])
+        expected = y[test]
+        tn, fp, fn, tp = metrics.confusion_matrix(expected,predicted).ravel()
+        result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
+    resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
+    return resultSum / split,
+
+def LRCParametersFitness(y,df,numberOfAtributtes,individual):
+    split=5
+    cv = StratifiedKFold(n_splits=split)
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df)
+
+    estimator = LogisticRegression(C=individual[0],solver=individual[1])
+    resultSum = 0
+    for train, test in cv.split(df_norm, y):
+        estimator.fit(df_norm[train], y[train])
+        predicted = estimator.predict(df_norm[test])
+        expected = y[test]
+        tn, fp, fn, tp = metrics.confusion_matrix(expected,predicted).ravel()
+        result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
+    resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
+    return resultSum / split,
 
 def LRCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
     split=5
@@ -84,11 +119,11 @@ def mutationLRC(individual):
         # loss
         solver = ["lbfgs","liblinear","saga"]
         individual[1] = solver[random.randint(0, 2)]
-    else: #genetyczna selekcja cech
-        if individual[numberParamer] == 0:
-            individual[numberParamer] = 1
-        else:   
-            individual[numberParamer] = 0
+    # else: #genetyczna selekcja cech
+    #     if individual[numberParamer] == 0:
+    #         individual[numberParamer] = 1
+    #     else:   
+    #         individual[numberParamer] = 0
 
 import time 
 
@@ -100,10 +135,10 @@ from deap import tools
 minValue = -10
 maxValue = 10
 bitsLength = 20
-sizePopulation = 10
+sizePopulation = 50
 probabilityMutation = 0.2
 probabilityCrossover = 0.8
-numberIteration = 100
+numberIteration = 20
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
@@ -112,7 +147,7 @@ creator.create("Individual", list, fitness=creator.FitnessMin)
 toolbox = base.Toolbox()
 toolbox.register('individual',LRCParametersFeatures, numberOfAtributtes, creator.Individual) # PROJEKT 4
 toolbox.register('population', tools.initRepeat, list, toolbox.individual)
-toolbox.register("evaluate", LRCParametersFeatureFitness,y,df,numberOfAtributtes) # PROJEKT 4
+toolbox.register("evaluate", LRCParametersFitness,y,df,numberOfAtributtes) # PROJEKT 4
 
 toolbox.register('select', tools.selWorst)
 toolbox.register("mate", tools.cxOnePoint)

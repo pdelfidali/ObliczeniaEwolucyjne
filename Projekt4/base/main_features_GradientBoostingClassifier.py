@@ -45,8 +45,8 @@ def GBCParametersFeatures(numberFeatures,icls):
     max_depth = random.randint(2,6)
     genome.append(max_depth)
     
-    for i in range(0,numberFeatures):
-        genome.append(random.randint(0, 1))
+    # for i in range(0,numberFeatures):
+    #     genome.append(random.randint(0, 1))
 
     return icls(genome)
 
@@ -54,6 +54,41 @@ def GBCParametersFeatures(numberFeatures,icls):
 import math
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
+
+
+def GBCDefault(y,df):
+    split=5
+    cv = StratifiedKFold(n_splits=split)
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df)
+
+    estimator = GradientBoostingClassifier()
+    resultSum = 0
+    for train, test in cv.split(df_norm, y):
+        estimator.fit(df_norm[train], y[train])
+        predicted = estimator.predict(df_norm[test])
+        expected = y[test]
+        tn, fp, fn, tp = metrics.confusion_matrix(expected,predicted).ravel()
+        result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
+    resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
+    return resultSum / split,
+
+def GBCParametersFitness(y,df,numberOfAtributtes,individual):
+    split=5
+    cv = StratifiedKFold(n_splits=split)
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df)
+
+    estimator = GradientBoostingClassifier(learning_rate=individual[0],loss=individual[1],n_estimators=individual[2],max_depth=individual[3])
+    resultSum = 0
+    for train, test in cv.split(df_norm, y):
+        estimator.fit(df_norm[train], y[train])
+        predicted = estimator.predict(df_norm[test])
+        expected = y[test]
+        tn, fp, fn, tp = metrics.confusion_matrix(expected,predicted).ravel()
+        result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
+    resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
+    return resultSum / split,
 
 def GBCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
     split=5
@@ -99,11 +134,11 @@ def mutationGBC(individual):
         # max_features
         max_depth = random.randint(2,6)
         individual[3]= max_depth
-    else: #genetyczna selekcja cech
-        if individual[numberParamer] == 0:
-            individual[numberParamer] = 1
-        else:   
-            individual[numberParamer] = 0
+    # else: #genetyczna selekcja cech
+    #     if individual[numberParamer] == 0:
+    #         individual[numberParamer] = 1
+    #     else:   
+    #         individual[numberParamer] = 0
 
 import time 
 
@@ -115,10 +150,10 @@ from deap import tools
 minValue = -10
 maxValue = 10
 bitsLength = 20
-sizePopulation = 5
+sizePopulation = 10
 probabilityMutation = 0.2
 probabilityCrossover = 0.8
-numberIteration = 20
+numberIteration = 10
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
@@ -127,7 +162,7 @@ creator.create("Individual", list, fitness=creator.FitnessMin)
 toolbox = base.Toolbox()
 toolbox.register('individual',GBCParametersFeatures, numberOfAtributtes, creator.Individual) # PROJEKT 4
 toolbox.register('population', tools.initRepeat, list, toolbox.individual)
-toolbox.register("evaluate", GBCParametersFeatureFitness,y,df,numberOfAtributtes) # PROJEKT 4
+toolbox.register("evaluate", GBCParametersFitness,y,df,numberOfAtributtes) # PROJEKT 4
 
 toolbox.register('select', tools.selWorst)
 toolbox.register("mate", tools.cxOnePoint)

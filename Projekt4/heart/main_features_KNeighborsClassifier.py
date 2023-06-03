@@ -1,12 +1,11 @@
 import pandas as pd
 pd.set_option('display.max_columns', None)
 
-df=pd.read_csv("./ReplicatedAcousticFeatures.csv",sep=',')
-y=df['Status']
-df.drop('Status',axis=1,inplace=True)
-df.drop('ID',axis=1,inplace=True)
-df.drop('Recording',axis=1,inplace=True) 
+df=pd.read_csv("heart.csv",sep=',')
+df.head()
 
+y=df['target']
+df.drop('target',axis=1,inplace=True)
 numberOfAtributtes= len(df.columns)
 # print(numberOfAtributtes) 
 
@@ -56,6 +55,7 @@ import math
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 
+
 def KNCDefault(y,df):
     split=5
     cv = StratifiedKFold(n_splits=split)
@@ -72,7 +72,6 @@ def KNCDefault(y,df):
         result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
     resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
     return resultSum / split,
-
 
 def KNCParametersFitness(y,df,numberOfAtributtes,individual):
     split=5

@@ -1,68 +1,71 @@
 import pandas as pd
 pd.set_option('display.max_columns', None)
 
-df=pd.read_csv("./ReplicatedAcousticFeatures.csv",sep=',')
-y=df['Status']
-df.drop('Status',axis=1,inplace=True)
-df.drop('ID',axis=1,inplace=True)
-df.drop('Recording',axis=1,inplace=True) 
+df=pd.read_csv("heart.csv",sep=',')
+df.head()
 
+y=df['target']
+df.drop('target',axis=1,inplace=True)
 numberOfAtributtes= len(df.columns)
 # print(numberOfAtributtes) 
 
 from sklearn import model_selection
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
-# KNeighborsClassifier
+# DecisionTreeClassifier
 
 
 mms = MinMaxScaler()
 df_norm = mms.fit_transform(df)
-clf = KNeighborsClassifier()
+clf = DecisionTreeClassifier()
 scores = model_selection.cross_val_score(clf, df_norm, y,
-cv=5, scoring='accuracy',
+ cv=5, scoring='accuracy',
 n_jobs=-1)
 # print(scores.mean()) 
 
 import random
 
-def KNCParametersFeatures(numberFeatures,icls):
+
+def DTCParametersFeatures(numberFeatures,icls):
     genome = list()
 
-    #n_neighbors
-    n_neighbors = random.randint(1, 20)
-    genome.append(n_neighbors)
+    # criterion
+    criterion = ["gini","entropy","log_loss"]
+    genome.append(criterion[random.randint(0, 2)])
 
-    # weights
-    listWeights = ["uniform","distance"]
-    genome.append(listWeights[random.randint(0, 1)])
+    # splitter
+    splitter = ["best", "random"]
+    genome.append(splitter[random.randint(0, 1)])
+    
+    # max_features
+    max_features = ["sqrt", "log2"]
+    genome.append(max_features[random.randint(0, 1)])
+    
+    # max_leaf_nodes
+    max_leaf_nodes = random.randint(2, 100)
+    genome.append(max_leaf_nodes)
 
-    # algorithm
-    listAlgorithm = ["ball_tree", "kd_tree", "brute"]
-    genome.append(listAlgorithm[random.randint(0, 2)])
-    
-    # leaf_size
-    leaf_size = random.randint(10, 100)
-    genome.append(leaf_size)
-    
     # for i in range(0,numberFeatures):
     #     genome.append(random.randint(0, 1))
 
-    return icls(genome) 
+    return icls(genome)
 
 
 import math
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 
-def KNCDefault(y,df):
+import math
+from sklearn import metrics
+
+def DTCDefault(y,df):
     split=5
     cv = StratifiedKFold(n_splits=split)
     mms = MinMaxScaler()
     df_norm = mms.fit_transform(df)
 
-    estimator = KNeighborsClassifier()
+    estimator = DecisionTreeClassifier()
     resultSum = 0
     for train, test in cv.split(df_norm, y):
         estimator.fit(df_norm[train], y[train])
@@ -74,13 +77,13 @@ def KNCDefault(y,df):
     return resultSum / split,
 
 
-def KNCParametersFitness(y,df,numberOfAtributtes,individual):
+def DTCParametersFitness(y,df,numberOfAtributtes,individual):
     split=5
     cv = StratifiedKFold(n_splits=split)
     mms = MinMaxScaler()
     df_norm = mms.fit_transform(df)
 
-    estimator = KNeighborsClassifier(n_neighbors=individual[0],weights=individual[1],algorithm=individual[2],leaf_size=individual[3])
+    estimator = DecisionTreeClassifier(criterion=individual[0],splitter=individual[1],max_features=individual[2],max_leaf_nodes=individual[3])
     resultSum = 0
     for train, test in cv.split(df_norm, y):
         estimator.fit(df_norm[train], y[train])
@@ -91,7 +94,7 @@ def KNCParametersFitness(y,df,numberOfAtributtes,individual):
     resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
     return resultSum / split,
 
-def KNCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
+def DTCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
     split=5
     cv = StratifiedKFold(n_splits=split)
 
@@ -104,7 +107,7 @@ def KNCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
 
     mms = MinMaxScaler()
     df_norm = mms.fit_transform(dfSelectedFeatures)
-    estimator = KNeighborsClassifier(n_neighbors=individual[0],weights=individual[1],algorithm=individual[2],leaf_size=individual[3]) 
+    estimator = DecisionTreeClassifier(criterion=individual[0],splitter=individual[1],max_features=individual[2],max_leaf_nodes=individual[3]) 
 
     resultSum = 0
     for train, test in cv.split(df_norm, y):
@@ -116,25 +119,25 @@ def KNCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
         resultSum = resultSum + result #zbieramy wyniki z poszczególnych etapów walidacji krzyżowej
     return resultSum / split,
 
-def mutationKNC(individual):
+def mutationDTC(individual):
     numberParamer= random.randint(0,len(individual)-1)
+
     if numberParamer==0:
-        # kernel
-        #n_neighbors
-        n_neighbors = random.randint(1, 20)
-        individual[0]=n_neighbors
+        #criterion
+        criterion = ["gini","entropy","log_loss"]
+        individual[0]=criterion[random.randint(0, 2)]
     elif numberParamer==1:
-        # weights
-        listWeights = ["uniform","distance"]
-        individual[1] = listWeights[random.randint(0, 1)]
+        # splitter
+        splitter = ["best", "random"]
+        individual[1] = splitter[random.randint(0, 1)]
     elif numberParamer == 2:
-        # algorithm
-        listAlgorithm = ["ball_tree", "kd_tree", "brute"]
-        individual[2]=listAlgorithm[random.randint(0, 2)]
+         # max_features
+        max_features = ["sqrt", "log2"]
+        individual[2]=max_features[random.randint(0, 1)]
     elif numberParamer == 3:
-        # leaf_size
-        leaf_size = random.randint(10, 100)
-        individual[3]=leaf_size
+        # max_leaf_nodes
+        max_leaf_nodes = random.randint(2, 100)
+        individual[3]=max_leaf_nodes
     # else: #genetyczna selekcja cech
     #     if individual[numberParamer] == 0:
     #         individual[numberParamer] = 1
@@ -151,38 +154,38 @@ from deap import tools
 minValue = -10
 maxValue = 10
 bitsLength = 20
-sizePopulation = 50
+sizePopulation = 100
 probabilityMutation = 0.2
 probabilityCrossover = 0.8
-numberIteration = 100
+numberIteration = 40
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
-toolbox.register('individual',KNCParametersFeatures, numberOfAtributtes, creator.Individual) # PROJEKT 4
+toolbox.register('individual',DTCParametersFeatures, numberOfAtributtes, creator.Individual) # PROJEKT 4
 toolbox.register('population', tools.initRepeat, list, toolbox.individual)
-toolbox.register("evaluate", KNCParametersFeatureFitness,y,df,numberOfAtributtes) # PROJEKT 4
+toolbox.register("evaluate", DTCParametersFeatureFitness,y,df,numberOfAtributtes) # PROJEKT 4
 
 toolbox.register('select', tools.selWorst)
 toolbox.register("mate", tools.cxOnePoint)
-toolbox.register("mutate", mutationKNC) # PROJEKT 4
+toolbox.register("mutate", mutationDTC) # PROJEKT 4
 
-if __name__ == "__main__":    
-    pop = toolbox.population(n=sizePopulation)
-    fitnesses = list(map(toolbox.evaluate, pop))
-    for ind, fit in zip(pop, fitnesses):
-        ind.fitness.values = fit
+pop = toolbox.population(n=sizePopulation)
+fitnesses = list(map(toolbox.evaluate, pop))
+for ind, fit in zip(pop, fitnesses):
+    ind.fitness.values = fit
 
+g = 0
+min_data = []
+max_data = []
+avg_data = []
+std_data = []
+numberElitism = 1
+t_start = time.time()
 
-    g = 0
-    min_data = []
-    max_data = []
-    avg_data = []
-    std_data = []
-    numberElitism = 1
-    t_start = time.time()
+if __name__ == "__main__":
     while g < numberIteration:
         g = g + 1
         print("-- Generation %i --" % g)

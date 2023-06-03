@@ -1,54 +1,61 @@
 if __name__ == "__main__":
     import pandas as pd
-
     pd.set_option('display.max_columns', None)
-    df=pd.read_csv("heart.csv",sep=',')
-    df.head()
-
-    y=df['target']
-    df.drop('target',axis=1,inplace=True)
+    df=pd.read_csv("./ReplicatedAcousticFeatures.csv",sep=',')
+    y=df['Status']
+    df.drop('Status',axis=1,inplace=True)
+    df.drop('ID',axis=1,inplace=True)
+    df.drop('Recording',axis=1,inplace=True) 
     numberOfAtributtes= len(df.columns)
     print(numberOfAtributtes) 
 
     from sklearn import model_selection
     from sklearn.preprocessing import MinMaxScaler
-    from sklearn.svm import SVC
+    from sklearn.neural_network import MLPClassifier
+
+    # MLPClassifier
+
+
     mms = MinMaxScaler()
     df_norm = mms.fit_transform(df)
-    clf = SVC()
+    clf = MLPClassifier()
     scores = model_selection.cross_val_score(clf, df_norm, y,
     cv=5, scoring='accuracy',
     n_jobs=-1)
     print(scores.mean()) 
 
     import random
-    def SVCParametersFeatures(numberFeatures,icls):
+
+    def MLPCParametersFeatures(numberFeatures,icls):
         genome = list()
-        # kernel
-        listKernel = ["linear","rbf", "poly", "sigmoid"]
-        genome.append(listKernel[random.randint(0, 3)])
-        #c
-        k = random.uniform(0.1, 100)
-        genome.append(k)
-        #degree
-        genome.append(random.randint(0,5))
-        #gamma
-        gamma = random.uniform(0.001,5)
-        genome.append(gamma)
-        # coeff
-        coeff = random.uniform(0.01, 10)
-        genome.append(coeff)
+
+        # hidden_layer_sizes
+        hidden_layer_sizes = random.randint(2, 10)
+        genome.append(hidden_layer_sizes)
+
+        # activation
+        activation = ["identity","logistic","tanh","relu"]
+        genome.append(activation[random.randint(0, 3)])
+
+        # alpha
+        alpha = random.uniform(0.0001,0.1)
+        genome.append(alpha)
+        
+        # learning_rate
+        learning_rate = ["constant", "invscaling", "adaptive"]
+        genome.append(learning_rate[random.randint(0, 2)])
         
         for i in range(0,numberFeatures):
             genome.append(random.randint(0, 1))
 
-        return icls(genome) 
+        return icls(genome)
+
 
     import math
     from sklearn import metrics
     from sklearn.model_selection import StratifiedKFold
 
-    def SVCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
+    def MLPCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
         split=5
         cv = StratifiedKFold(n_splits=split)
 
@@ -61,7 +68,7 @@ if __name__ == "__main__":
 
         mms = MinMaxScaler()
         df_norm = mms.fit_transform(dfSelectedFeatures)
-        estimator = SVC(kernel=individual[0],C=individual[1],degree=individual[2],gamma=individual[3],coef0=individual[4],random_state=101) 
+        estimator = MLPClassifier(hidden_layer_sizes=individual[0],activation=individual[1],alpha=individual[2],learning_rate=individual[3]) 
 
         resultSum = 0
         for train, test in cv.split(df_norm, y):
@@ -73,32 +80,31 @@ if __name__ == "__main__":
             resultSum = resultSum + result #zbieramy wyniki z poszczególnych etapów walidacji krzyżowej
         return resultSum / split,
 
-    def mutationSVC(individual):
+    def mutationMLPC(individual):
         numberParamer= random.randint(0,len(individual)-1)
+
         if numberParamer==0:
-            # kernel
-            listKernel = ["linear", "rbf", "poly", "sigmoid"]
-            individual[0]=listKernel[random.randint(0, 3)]
+            #n_estimators
+            hidden_layer_sizes = random.randint(2, 10)
+            individual[0]=hidden_layer_sizes
         elif numberParamer==1:
-            #C
-            k = random.uniform(0.1,100)
-            individual[1]=k
+            # activation
+            activation = ["identity","logistic","tanh","relu"]
+            individual[1] = activation[random.randint(0, 3)]
         elif numberParamer == 2:
-            #degree
-            individual[2]=random.randint(0, 5)
+            # max_depth
+            alpha = random.uniform(0.0001,0.1)
+            individual[2]=alpha
         elif numberParamer == 3:
-            #gamma
-            gamma = random.uniform(0.01, 1)
-            individual[3]=gamma
-        elif numberParamer ==4:
-            # coeff
-            coeff = random.uniform(0.1, 1)
-            individual[4] = coeff
+            # max_features
+            learning_rate = ["constant", "invscaling", "adaptive"]
+            individual[3]= learning_rate[random.randint(0, 2)]
         else: #genetyczna selekcja cech
             if individual[numberParamer] == 0:
                 individual[numberParamer] = 1
             else:   
                 individual[numberParamer] = 0
+
     import time 
 
     import matplotlib.pyplot as plt
@@ -119,32 +125,22 @@ if __name__ == "__main__":
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
     toolbox = base.Toolbox()
-
-    # PROJEKT 4
-    # from scoop import futures
-
-    # toolbox.register("map", futures.map)
-    import multiprocessing
-
-    pool = multiprocessing.Pool()
-    toolbox.register("map", pool.map)
-
-
-    toolbox.register('individual',SVCParametersFeatures, numberOfAtributtes, creator.Individual) # PROJEKT 4
+    toolbox.register('individual',MLPCParametersFeatures, numberOfAtributtes, creator.Individual) # PROJEKT 4
     toolbox.register('population', tools.initRepeat, list, toolbox.individual)
-    toolbox.register("evaluate", SVCParametersFeatureFitness,y,df,numberOfAtributtes) # PROJEKT 4
+    toolbox.register("evaluate", MLPCParametersFeatureFitness,y,df,numberOfAtributtes) # PROJEKT 4
 
     toolbox.register('select', tools.selWorst)
     toolbox.register("mate", tools.cxOnePoint)
-    toolbox.register("mutate", mutationSVC) # PROJEKT 4
+    toolbox.register("mutate", mutationMLPC) # PROJEKT 4
 
+    print('sdfsdfsfd')
     pop = toolbox.population(n=sizePopulation)
-    #fitnesses = list(map(toolbox.evaluate, pop))
-    fitnesses = toolbox.map(toolbox.evaluate, pop)  # PROJEKT 4
-
-
+    fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
+        print(ind)
         ind.fitness.values = fit
+    print('sdfsdfsfasdfsadfdsad')
+
 
     g = 0
     min_data = []
@@ -159,10 +155,7 @@ if __name__ == "__main__":
         # Select the next generation individuals
         offspring = toolbox.select(pop, len(pop))
         # Clone the selected individuals
-        
-        #offspring = list(map(toolbox.clone, offspring))
-        offspring = toolbox.map(toolbox.clone, offspring)  # PROJEKT 4
-
+        offspring = list(map(toolbox.clone, offspring))
 
         listElitism = []
         for x in range(0, numberElitism):
@@ -184,12 +177,8 @@ if __name__ == "__main__":
                 del mutant.fitness.values
 
         # Evaluate the individuals with an invalid fitness
-        
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-
-        # fitnesses = map(toolbox.evaluate, invalid_ind)
-        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)  # PROJEKT 4
-
+        fitnesses = map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
@@ -205,10 +194,10 @@ if __name__ == "__main__":
         max_data.append(max(fits))
         avg_data.append(mean)
         std_data.append(std)
-        print("  Min %s" % min(fits))
-        print("  Max %s" % max(fits))
-        print("  Avg %s" % mean)
-        print("  Std %s" % std)
+        # print("  Min %s" % min(fits))
+        # print("  Max %s" % max(fits))
+        # print("  Avg %s" % mean)
+        # print("  Std %s" % std)
     runtime = time.time() - t_start
     print(f"{runtime * 1000:.2f} ms & {min(fits):.5f} & {sum(std_data)/len(std_data):.2f}")
     best_ind = tools.selBest(pop, 1)[0]
@@ -227,4 +216,4 @@ if __name__ == "__main__":
     plt.subplot(2,2,4)
     plt.plot(std_data)
     plt.title("Wartość odchylenia standardowego")
-    plt.show()
+    # plt.show()

@@ -27,6 +27,7 @@ n_jobs=-1)
 
 import random
 
+
 def DTCParametersFeatures(numberFeatures,icls):
     genome = list()
 
@@ -46,8 +47,8 @@ def DTCParametersFeatures(numberFeatures,icls):
     max_leaf_nodes = random.randint(2, 100)
     genome.append(max_leaf_nodes)
 
-    for i in range(0,numberFeatures):
-        genome.append(random.randint(0, 1))
+    # for i in range(0,numberFeatures):
+    #     genome.append(random.randint(0, 1))
 
     return icls(genome)
 
@@ -55,6 +56,44 @@ def DTCParametersFeatures(numberFeatures,icls):
 import math
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
+
+import math
+from sklearn import metrics
+
+
+def DTCDefault(y,df):
+    split=5
+    cv = StratifiedKFold(n_splits=split)
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df)
+
+    estimator = DecisionTreeClassifier()
+    resultSum = 0
+    for train, test in cv.split(df_norm, y):
+        estimator.fit(df_norm[train], y[train])
+        predicted = estimator.predict(df_norm[test])
+        expected = y[test]
+        tn, fp, fn, tp = metrics.confusion_matrix(expected,predicted).ravel()
+        result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
+    resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
+    return resultSum / split,
+
+def DTCParametersFitness(y,df,numberOfAtributtes,individual):
+    split=5
+    cv = StratifiedKFold(n_splits=split)
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df)
+
+    estimator = DecisionTreeClassifier(criterion=individual[0],splitter=individual[1],max_features=individual[2],max_leaf_nodes=individual[3])
+    resultSum = 0
+    for train, test in cv.split(df_norm, y):
+        estimator.fit(df_norm[train], y[train])
+        predicted = estimator.predict(df_norm[test])
+        expected = y[test]
+        tn, fp, fn, tp = metrics.confusion_matrix(expected,predicted).ravel()
+        result = (tp + tn) / (tp + fp + tn + fn) #w oparciu o macierze pomyłek https://www.dataschool.io/simple-guide-to-confusion-matrixterminology/
+    resultSum = resultSum + result #zbieramy wyniki z poszczególnychetapów walidacji krzyżowej
+    return resultSum / split,
 
 def DTCParametersFeatureFitness(y,df,numberOfAtributtes,individual):
     split=5
@@ -100,11 +139,11 @@ def mutationDTC(individual):
         # max_leaf_nodes
         max_leaf_nodes = random.randint(2, 100)
         individual[3]=max_leaf_nodes
-    else: #genetyczna selekcja cech
-        if individual[numberParamer] == 0:
-            individual[numberParamer] = 1
-        else:   
-            individual[numberParamer] = 0
+    # else: #genetyczna selekcja cech
+    #     if individual[numberParamer] == 0:
+    #         individual[numberParamer] = 1
+    #     else:   
+    #         individual[numberParamer] = 0
 
 import time 
 
@@ -119,7 +158,7 @@ bitsLength = 20
 sizePopulation = 100
 probabilityMutation = 0.2
 probabilityCrossover = 0.8
-numberIteration = 100
+numberIteration = 40
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
