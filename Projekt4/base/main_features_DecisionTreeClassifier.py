@@ -1,10 +1,12 @@
 import pandas as pd
 pd.set_option('display.max_columns', None)
-df=pd.read_csv("heart.csv",sep=',')
-df.head()
 
-y=df['target']
-df.drop('target',axis=1,inplace=True)
+df=pd.read_csv("./ReplicatedAcousticFeatures.csv",sep=',')
+y=df['Status']
+df.drop('Status',axis=1,inplace=True)
+df.drop('ID',axis=1,inplace=True)
+df.drop('Recording',axis=1,inplace=True) 
+
 numberOfAtributtes= len(df.columns)
 # print(numberOfAtributtes) 
 
@@ -114,10 +116,10 @@ from deap import tools
 minValue = -10
 maxValue = 10
 bitsLength = 20
-sizePopulation = 10
+sizePopulation = 100
 probabilityMutation = 0.2
 probabilityCrossover = 0.8
-numberIteration = 20
+numberIteration = 100
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 

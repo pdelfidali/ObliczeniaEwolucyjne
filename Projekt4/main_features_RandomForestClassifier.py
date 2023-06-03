@@ -115,10 +115,10 @@ from deap import tools
 minValue = -10
 maxValue = 10
 bitsLength = 20
-sizePopulation = 100
+sizePopulation = 5
 probabilityMutation = 0.2
 probabilityCrossover = 0.8
-numberIteration = 50
+numberIteration = 20
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 

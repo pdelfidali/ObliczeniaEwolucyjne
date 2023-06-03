@@ -13,11 +13,11 @@ from main_features_LogisticRegression import LRCParametersFeatureFitness
 from main_features_RandomForestClassifier import RFCParametersFeatureFitness
 from main_features_GradientBoostingClassifier import GBCParametersFeatureFitness
 
-ind_kn =  [2, 'uniform', 'ball_tree', 20, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0]
-ind_lr = [0.1579853859402021, 'saga', 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0]
-ind_rforest = [2, 'gini', 13, 'sqrt', 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1]
-ind_grad = [0.004180218226607635, 'exponential', 25, 2, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1]
-ind_decision_tree = ['entropy', 'random', 'sqrt', 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1]
+ind_kn =   [2, 'uniform', 'ball_tree', 20, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0]
+ind_lr =  [0.1579853859402021, 'saga', 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0]
+ind_rforest = [12, 'entropy', 10, 'log2', 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1]
+ind_grad = [0.8296793479046654, 'log_loss', 30, 2, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1]
+ind_decision_tree = ['log_loss', 'random', 'log2', 5, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1]
 
 print(f'{numberOfAtributtes=}')
 
